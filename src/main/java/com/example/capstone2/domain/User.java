@@ -1,13 +1,12 @@
 package com.example.capstone2.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -19,5 +18,8 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role; // 사용자 역할 (USER 또는 ADMIN)
 
 }
