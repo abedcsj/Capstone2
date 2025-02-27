@@ -20,6 +20,6 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // 사용자 역할 (USER 또는 ADMIN)
+    private Role role; // 사용자 역할 (USER or ADMIN)
 
 }

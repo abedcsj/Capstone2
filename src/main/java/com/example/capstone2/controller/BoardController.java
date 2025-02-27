@@ -1,14 +1,12 @@
 package com.example.capstone2.controller;
 
 import com.example.capstone2.domain.Board;
+import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.service.BoardService;
 import com.example.capstone2.domain.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,9 +17,30 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    //📌카테고리별 게시판 조회 기능
+    // 📌 게시판 생성
+    @PostMapping("/{boardId}")
+    public ResponseEntity<String> createBoard(@RequestBody BoardDto boardDto) {
+        boardService.createBoard(boardDto);
+        return ResponseEntity.ok("게시글이 성공적으로 수정되었습니다.");
+    }
+
+    // 📌게시판 수정
+    @PutMapping("/{boardId}")
+    public ResponseEntity<String> updateBoard(@PathVariable Long boardId, @RequestBody BoardDto boardDto) {
+        boardService.updateBoard(boardId, boardDto);
+        return ResponseEntity.ok("게시글이 성공적으로 수정되었습니다.");
+    }
+
+    // 📌게시판 삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId, @RequestBody BoardDto boardDto) {
+        boardService.deleteBoard(boardId, boardDto);
+        return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
+    }
+
+    // 📌 카테고리별로 게시판 조회
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<Board>>getBoardsByCategory(@PathVariable Category category){
+    public ResponseEntity<List<BoardDto>>getBoardsByCategory(@PathVariable Category category){
         return ResponseEntity.ok(boardService.getBoardsByCategory(category));
     }
 

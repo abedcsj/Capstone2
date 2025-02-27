@@ -24,6 +24,7 @@ public class Credit {
     @JoinColumn(name = "to_user_id")
     private User toUser;
 
-    private int amount; // 거래된 크레딧 수량
+    private int amount;
+
     private LocalDateTime transactionTime;
 }
