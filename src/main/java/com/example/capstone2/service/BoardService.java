@@ -18,7 +18,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    // 📌 게시글 생성
+    // 📌 게시글 생성-성준
     public void createBoard(BoardDto boardDto) {
         User user = userRepository.findById(boardDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -33,7 +33,7 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    // 📌 게시글 수정
+    // 📌 게시글 수정-성준
     public void updateBoard(Long boardId, BoardDto boardDto) {
 
         Board board = boardRepository.findById(boardId)
@@ -49,7 +49,7 @@ public class BoardService {
 
         boardRepository.save(board);
     }
-    // 📌 게시글 삭제
+    // 📌 게시글 삭제-성준
     public void deleteBoard(Long boardId, BoardDto boardDto) {
 
         Board board = boardRepository.findById(boardId)
@@ -61,7 +61,7 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    // 📌 해당 카테고리의 게시글 목록 조회
+    // 📌 해당 카테고리의 게시글 목록 조회-성준
     public List<BoardDto> getBoardsByCategory(Category category) {
         List<Board> boards = boardRepository.findByCategory(category);
         return boards.stream()
@@ -78,7 +78,7 @@ public class BoardService {
     }
 
 
-    // 📌 게시글 삭제(게시글 작성자가 누구든 상관없이 모두 삭제 가능) | (관리자 기능)
+    // 📌 게시글 삭제(게시글 작성자가 누구든 상관없이 모두 삭제 가능) | (관리자 기능)-성준
     public void deleteBoardByAdmin(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
