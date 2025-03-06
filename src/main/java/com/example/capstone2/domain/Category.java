@@ -9,5 +9,8 @@ public enum Category {
     ENGINEERING,  // 공학 & 과학
     BUSINESS,     // 비즈니스 & 금융
     VOLUNTEERING, // 사회봉사 & 공익
+    HEALTHCARE,   // 건강 & 의료
+    SPORTS,       // 스포츠 & 트레이닝
+    COOKING,      // 요리 & 베이킹
     ETC           // 기타 맞춤형 재능
 }

@@ -2,13 +2,16 @@ package com.example.capstone2.service;
 
 import com.example.capstone2.domain.Board;
 import com.example.capstone2.domain.Category;
+import com.example.capstone2.domain.Role;
 import com.example.capstone2.domain.User;
 import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.repository.BoardRepository;
 import com.example.capstone2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +21,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    // 📌 게시글 생성-성준
+    // 📌 게시글 생성
     public void createBoard(BoardDto boardDto) {
         User user = userRepository.findById(boardDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -30,41 +33,73 @@ public class BoardService {
         board.setRequest(boardDto.isRequest());
         board.setLikeCount(0);
         board.setCategory(boardDto.getCategory());
+        board.setClosed(false); // 기본값: 모집 중
+        board.setCreatedAt(LocalDateTime.now()); // 생성 시간 자동 설정
+
         boardRepository.save(board);
     }
 
-    // 📌 게시글 수정-성준
+    // 📌 게시글 수정 (본인만 가능)
     public void updateBoard(Long boardId, BoardDto boardDto) {
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         if (!board.getUser().getId().equals(boardDto.getUserId())) {
-            throw new IllegalArgumentException("게시판 작성자가 아니므로 수정 권한이 없습니다");
+            throw new IllegalArgumentException("게시판 작성자가 아니므로 수정 권한이 없습니다.");
         }
+
         board.setTitle(boardDto.getTitle());
         board.setDescription(boardDto.getDescription());
         board.setRequest(boardDto.isRequest());
         board.setCategory(boardDto.getCategory());
+        board.setUpdatedAt(LocalDateTime.now()); // 수정 시간 기록
 
         boardRepository.save(board);
     }
-    // 📌 게시글 삭제-성준
-    public void deleteBoard(Long boardId, BoardDto boardDto) {
+
+    // 📌 게시글 삭제 (본인만 가능)
+    public void deleteBoard(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!board.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("게시판 작성자가 아니므로 삭제 권한이 없습니다.");
+        }
+
+        boardRepository.delete(board);
+    }
+
+    // 📌 관리자 기능 - 게시글 강제 삭제 (작성자 상관없이 삭제 가능)
+    public void deleteBoardByAdmin(Long boardId, User admin) {
+        if (admin.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("관리자 권한이 없습니다.");
+        }
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        if (!board.getUser().getId().equals(boardDto.getUserId())) {
-            throw new IllegalArgumentException("게시판 작성자가 아니므로 수정 권한이 없습니다");
-        }
         boardRepository.delete(board);
     }
 
-    // 📌 해당 카테고리의 게시글 목록 조회-성준
+
+
+    // 📌 게시글 모집 상태 변경 (모집 완료 / 모집 중)
+    public void toggleBoardStatus(Long boardId, Long userId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!board.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("게시글 작성자만 모집 상태를 변경할 수 있습니다.");
+        }
+
+        board.setClosed(!board.isClosed()); // 상태 변경 (모집 중 → 모집 완료 or 모집 완료 → 모집 중)
+        boardRepository.save(board);
+    }
+
+    // 📌 카테고리별 게시글 목록 조회 (최신순 정렬)
     public List<BoardDto> getBoardsByCategory(Category category) {
-        List<Board> boards = boardRepository.findByCategory(category);
-        return boards.stream()
+        return boardRepository.findByCategory(category).stream()
+                .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt())) // 최신순 정렬
                 .map(board -> new BoardDto(
                         board.getId(),
                         board.getUser().getId(),
@@ -72,18 +107,30 @@ public class BoardService {
                         board.getDescription(),
                         board.isRequest(),
                         board.getLikeCount(),
-                        board.getCategory()
+                        board.getCategory(),
+                        board.isClosed(),
+                        board.getCreatedAt(),
+                        board.getUpdatedAt()
                 ))
                 .collect(Collectors.toList());
     }
 
-
-    // 📌 게시글 삭제(게시글 작성자가 누구든 상관없이 모두 삭제 가능) | (관리자 기능)-성준
-    public void deleteBoardByAdmin(Long boardId) {
+    // 📌 게시글 상세 조회
+    public BoardDto getBoardById(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
-        boardRepository.delete(board);
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        return new BoardDto(
+                board.getId(),
+                board.getUser().getId(),
+                board.getTitle(),
+                board.getDescription(),
+                board.isRequest(),
+                board.getLikeCount(),
+                board.getCategory(),
+                board.isClosed(),
+                board.getCreatedAt(),
+                board.getUpdatedAt()
+        );
     }
-
 }
-

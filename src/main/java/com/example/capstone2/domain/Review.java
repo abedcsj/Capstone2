@@ -11,20 +11,23 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    // 📌리뷰 작성자 (서비스 이용자)
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
+    @JoinColumn(name = "reviewer_id", nullable = false)
+    private User reviewer;
+    // 📌리뷰 대상 (서비스 제공자)
     @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
-
+    @JoinColumn(name = "reviewee_id", nullable = false)
+    private User reviewee;
+    // 📌리뷰 내용
     private String content;
+    // 📌별점 (1~5)
+    private int rating;
+
     private LocalDateTime createdAt;
 
     @PrePersist

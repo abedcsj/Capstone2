@@ -19,7 +19,8 @@ public class User {
     private String email;
     private String password;
 
+    // 📌사용자 역할 (USER or ADMIN)
     @Enumerated(EnumType.STRING)
-    private Role role; // 사용자 역할 (USER or ADMIN)
+    private Role role;
 
 }
