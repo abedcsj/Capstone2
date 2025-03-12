@@ -67,13 +67,27 @@ public class BoardParticipationService {
             throw new IllegalStateException("아직 게시글 작성자가 승인하지 않았습니다.");
         }
 
-        participation.setStatus(ParticipationStatus.APPROVED);
+        participation.setStatus(ParticipationStatus.COMPLETED);
         boardParticipationRepository.save(participation);
     }
 
-    // 📌 특정 게시글의 참여 신청 목록 조회 (PENDING 상태인 신청만 조회)
-    public List<BoardParticipationDto> getPendingParticipants(Long boardId) {
-        return boardParticipationRepository.findByBoardIdAndStatus(boardId, ParticipationStatus.PENDING).stream()
+    // 📌 게시글 참여 후 서비스 진행 (APPROVED 상태 → COMPLETED)
+    @Transactional
+    public void joinBoard(Long boardId, Long userId) {
+        BoardParticipation participation = boardParticipationRepository.findByBoardIdAndUserId(boardId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("참여 신청이 존재하지 않습니다."));
+
+        if (participation.getStatus() != ParticipationStatus.APPROVED) {
+            throw new IllegalStateException("참여 신청이 승인되지 않았습니다.");
+        }
+
+        participation.setStatus(ParticipationStatus.COMPLETED);
+        boardParticipationRepository.save(participation);
+    }
+
+    // 📌 특정 게시글에 참여한 사용자 목록 조회 (APPROVED 상태만)
+    public List<BoardParticipationDto> getParticipantsByBoard(Long boardId) {
+        return boardParticipationRepository.findByBoardIdAndStatus(boardId, ParticipationStatus.APPROVED).stream()
                 .map(part -> new BoardParticipationDto(
                         part.getId(),
                         part.getBoard().getId(),

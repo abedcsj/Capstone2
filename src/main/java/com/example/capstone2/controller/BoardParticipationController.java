@@ -1,8 +1,6 @@
 package com.example.capstone2.controller;
 
-import com.example.capstone2.dto.BoardParticipantDto;
 import com.example.capstone2.dto.BoardParticipationDto;
-import com.example.capstone2.service.BoardParticipantService;
 import com.example.capstone2.service.BoardParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,40 +12,34 @@ import java.util.List;
 @RequestMapping("/api/board-participation")
 @RequiredArgsConstructor
 public class BoardParticipationController {
-    private final BoardParticipantService boardParticipantService;
+
     private final BoardParticipationService boardParticipationService;
 
     // 📌 게시글 참여 신청 API (PENDING 상태로 저장)
     @PostMapping("/{boardId}/request")
     public ResponseEntity<String> requestParticipation(@PathVariable Long boardId, @RequestParam Long userId) {
-        boardParticipantService.requestParticipation(boardId, userId);
+        boardParticipationService.requestParticipation(boardId, userId);
         return ResponseEntity.ok("게시글 참여 신청이 완료되었습니다.");
     }
 
     // 📌 게시글 작성자가 참여 승인 API (PENDING → APPROVED)
-    @PutMapping("/{participantId}/approve")
-    public ResponseEntity<String> approveParticipation(@PathVariable Long participantId) {
-        boardParticipantService.approveParticipation(participantId);
+    @PutMapping("/{participationId}/approve")
+    public ResponseEntity<String> approveParticipation(@PathVariable Long participationId) {
+        boardParticipationService.approveParticipation(participationId);
         return ResponseEntity.ok("참여 신청이 승인되었습니다.");
     }
 
     // 📌 게시글 작성자가 참여 거절 API (PENDING → REJECTED)
-    @PutMapping("/{participantId}/reject")
-    public ResponseEntity<String> rejectParticipation(@PathVariable Long participantId) {
-        boardParticipantService.rejectParticipation(participantId);
+    @PutMapping("/{participationId}/reject")
+    public ResponseEntity<String> rejectParticipation(@PathVariable Long participationId) {
+        boardParticipationService.rejectParticipation(participationId);
         return ResponseEntity.ok("참여 신청이 거절되었습니다.");
-    }
-
-    // 📌 특정 게시글의 참여 신청 목록 조회 API (PENDING 상태만)
-    @GetMapping("/{boardId}/pending")
-    public ResponseEntity<List<BoardParticipantDto>> getPendingParticipants(@PathVariable Long boardId) {
-        return ResponseEntity.ok(boardParticipantService.getPendingParticipants(boardId));
     }
 
     // 📌 게시글 참여 후 서비스 진행 API (APPROVED → 진행 중)
     @PostMapping("/{boardId}/join")
     public ResponseEntity<String> joinBoard(@PathVariable Long boardId, @RequestParam Long userId) {
-        boardParticipationService.requestParticipation(boardId, userId);
+        boardParticipationService.joinBoard(boardId, userId);
         return ResponseEntity.ok("참여 요청이 완료되었습니다.");
     }
 
