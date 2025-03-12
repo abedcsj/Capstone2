@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h2 id="boardTitle"></h2>
+<p id="boardDescription"></p>
+<p>크레딧: <span id="boardCredit"></span></p>
+<button id="joinBoard">게시글 참여</button>
+<div id="participantsList"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const boardId = urlParams.get('boardId');
+        const userId = localStorage.getItem('userId');
+
+        fetch(`/api/board/${boardId}`)
+            .then(response => response.json())
+            .then(board => {
+                document.getElementById('boardTitle').textContent = board.title;
+                document.getElementById('boardDescription').textContent = board.description;
+                document.getElementById('boardCredit').textContent = board.creditAmount;
+            })
+            .catch(error => console.error('Error:', error));
+
+        document.getElementById('joinBoard').addEventListener('click', function() {
+            fetch(`/api/board-participation/${boardId}/join?userId=${userId}`, {
+                method: 'POST'
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        // 게시글 작성자가 참여자 승인 가능
+        fetch(`/api/board-participation/${boardId}/participants`)
+            .then(response => response.json())
+            .then(participants => {
+                const participantsList = document.getElementById('participantsList');
+                participants.forEach(participant => {
+                    const div = document.createElement('div');
+                    div.textContent = `참여자 ID: ${participant.userId}`;
+                    if (!participant.approved) {
+                        const approveButton = document.createElement('button');
+                        approveButton.textContent = '참여 승인';
+                        approveButton.onclick = function() {
+                            fetch(`/api/board-participation/${participant.id}/approve`, { method: 'PUT' })
+                                .then(response => response.text())
+                                .then(data => {
+                                    alert(data);
+                                    location.reload();
+                                })
+                                .catch(error => console.error('Error:', error));
+                        };
+                        div.appendChild(approveButton);
+                    }
+                    participantsList.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>

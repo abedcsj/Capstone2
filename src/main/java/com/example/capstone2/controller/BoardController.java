@@ -13,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
 public class BoardController {
-
     private final BoardService boardService;
 
     // 📌 게시글 생성 API

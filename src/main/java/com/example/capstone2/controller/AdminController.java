@@ -1,12 +1,15 @@
 package com.example.capstone2.controller;
 
+import com.example.capstone2.domain.Role;
 import com.example.capstone2.domain.User;
+import com.example.capstone2.dto.CreditDto;
 import com.example.capstone2.dto.UserDto;
 import com.example.capstone2.service.BoardService;
 import com.example.capstone2.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.capstone2.service.CreditService;
 
 import java.util.List;
 
@@ -16,6 +19,7 @@ import java.util.List;
 public class AdminController {
     private final UserService userService;
     private final BoardService boardService;
+    private final CreditService creditService;
 
     // 📌 사용자 강제 탈퇴 기능 (관리자 권한 체크는 서비스에서 수행)
     @DeleteMapping("/user/{userId}")
@@ -41,5 +45,14 @@ public class AdminController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    // 📌 특정 사용자의 크레딧 내역 조회 (보낸 & 받은 내역 포함)
+    @GetMapping("/user/{userId}/credits")
+    public ResponseEntity<List<CreditDto>> getUserCredits(@PathVariable Long userId, @RequestBody User admin) {
+        if (admin.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(creditService.getUserCredits(userId));
     }
 }

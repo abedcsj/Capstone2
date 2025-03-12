@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <script>
+        function loadCategories() {
+            fetch("/api/category")
+                .then(response => response.json())
+                .then(data => {
+                    const categorySelect = document.getElementById("category");
+                    categorySelect.innerHTML = data.map(cat => `<option value="${cat}">${cat}</option>`).join("");
+                });
+        }
+
+        function getBoards() {
+            const category = document.getElementById("category").value;
+            fetch(`/api/board/category/${category}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("boardList").innerHTML = data.map(board => `
+                        <li>
+                            <strong>${board.title}</strong> - ${board.content}
+                            <button onclick="joinBoard(${board.id})">참여</button>
+                        </li>
+                    `).join("");
+                });
+        }
+
+        function createBoard() {
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+            const category = document.getElementById("category").value;
+
+            fetch("/api/board", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, content, category })
+            }).then(() => {
+                alert("게시글이 생성되었습니다.");
+                getBoards();
+            });
+        }
+
+        function joinBoard(boardId) {
+            fetch(`/api/board/${boardId}/join`, { method: "POST" })
+                .then(() => {
+                    alert("게시글에 참여했습니다! 크레딧 거래를 진행하세요.");
+                    window.location.href = "credits.html";
+                });
+        }
+    </script>
+</head>
+<body onload="loadCategories()">
+<h1>게시판</h1>
+
+<h2>카테고리 선택</h2>
+<select id="category"></select>
+<button onclick="getBoards()">게시글 조회</button>
+
+<h2>게시글 생성</h2>
+<input type="text" id="title" placeholder="게시글 제목">
+<input type="text" id="content" placeholder="게시글 내용">
+<button onclick="createBoard()">게시글 작성</button>
+
+<h2>게시글 목록</h2>
+<ul id="boardList"></ul>
+
+<a href="credits.html">크레딧 거래 페이지로 이동</a>
+</body>
+</html>

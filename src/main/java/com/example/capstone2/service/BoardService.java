@@ -1,15 +1,13 @@
 package com.example.capstone2.service;
 
-import com.example.capstone2.domain.Board;
-import com.example.capstone2.domain.Category;
-import com.example.capstone2.domain.Role;
-import com.example.capstone2.domain.User;
+import com.example.capstone2.domain.*;
 import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.repository.BoardRepository;
 import com.example.capstone2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +38,7 @@ public class BoardService {
     }
 
     // 📌 게시글 수정 (본인만 가능)
+    @Transactional
     public void updateBoard(Long boardId, BoardDto boardDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -58,6 +57,7 @@ public class BoardService {
     }
 
     // 📌 게시글 삭제 (본인만 가능)
+    @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -69,21 +69,20 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    // 📌 관리자 기능 - 게시글 강제 삭제 (작성자 상관없이 삭제 가능)
+    // 📌 게시판 글 삭제 (관리자 권한)
+    @Transactional
     public void deleteBoardByAdmin(Long boardId, User admin) {
         if (admin.getRole() != Role.ADMIN) {
             throw new AccessDeniedException("관리자 권한이 없습니다.");
         }
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         boardRepository.delete(board);
     }
 
-
-
-    // 📌 게시글 모집 상태 변경 (모집 완료 / 모집 중)
+    // 📌 게시글 모집 상태 변경 (모집 완료 ↔ 모집 중)
+    @Transactional
     public void toggleBoardStatus(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -96,7 +95,7 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    // 📌 카테고리별 게시글 목록 조회 (최신순 정렬)
+    // 📌 게시글 카테고리별 조회 (최신순 정렬)
     public List<BoardDto> getBoardsByCategory(Category category) {
         return boardRepository.findByCategory(category).stream()
                 .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt())) // 최신순 정렬

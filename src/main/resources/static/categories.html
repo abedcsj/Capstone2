@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h2 id="categoryTitle"></h2>
+<button onclick="window.location.href='create-board.html'">게시글 작성</button>
+<ul id="boardList"></ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        document.getElementById('categoryTitle').textContent = `${category} 게시판`;
+
+        fetch(`/api/board/category/${category}`)
+            .then(response => response.json())
+            .then(boards => {
+                const boardList = document.getElementById('boardList');
+                boards.forEach(board => {
+                    const li = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `board-details.html?boardId=${board.id}`;
+                    link.textContent = board.title;
+                    li.appendChild(link);
+                    boardList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 package com.example.capstone2.domain;
 
 public enum CreditStatus {
-    PENDING, COMPLETED
+    PENDING, COMPLETED, APPROVED, REFUNDED
 }
