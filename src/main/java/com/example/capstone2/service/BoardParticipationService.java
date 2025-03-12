@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ public class BoardParticipationService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    // 📌 게시글 참여 신청
+    // 📌 게시글 참여 신청 (PENDING 상태로 저장)
     @Transactional
     public void requestParticipation(Long boardId, Long userId) {
         User user = userRepository.findById(userId)
@@ -30,44 +31,56 @@ public class BoardParticipationService {
         BoardParticipation participation = new BoardParticipation();
         participation.setBoard(board);
         participation.setUser(user);
-        participation.setApproved(false);
-        participation.setServiceCompleted(false);
+        participation.setStatus(ParticipationStatus.PENDING);
+        participation.setRequestedAt(LocalDateTime.now());
         boardParticipationRepository.save(participation);
     }
 
-    // 📌 게시글 작성자가 참여 승인
+    // 📌 게시글 작성자가 참여 승인 (PENDING → APPROVED)
     @Transactional
     public void approveParticipation(Long participationId) {
         BoardParticipation participation = boardParticipationRepository.findById(participationId)
                 .orElseThrow(() -> new IllegalArgumentException("참여 정보를 찾을 수 없습니다."));
 
-        participation.setApproved(true);
+        participation.setStatus(ParticipationStatus.APPROVED);
+        participation.setApprovedAt(LocalDateTime.now());
         boardParticipationRepository.save(participation);
     }
 
-    // 📌 서비스 완료 후 참여자가 확인
+    // 📌 게시글 작성자가 참여 거절 (PENDING → REJECTED)
+    @Transactional
+    public void rejectParticipation(Long participationId) {
+        BoardParticipation participation = boardParticipationRepository.findById(participationId)
+                .orElseThrow(() -> new IllegalArgumentException("참여 정보를 찾을 수 없습니다."));
+
+        participation.setStatus(ParticipationStatus.REJECTED);
+        boardParticipationRepository.save(participation);
+    }
+
+    // 📌 서비스 완료 후 참여자가 확인 (크레딧 지급)
     @Transactional
     public void completeService(Long participationId) {
         BoardParticipation participation = boardParticipationRepository.findById(participationId)
                 .orElseThrow(() -> new IllegalArgumentException("참여 정보를 찾을 수 없습니다."));
 
-        if (!participation.isApproved()) {
+        if (participation.getStatus() != ParticipationStatus.APPROVED) {
             throw new IllegalStateException("아직 게시글 작성자가 승인하지 않았습니다.");
         }
 
-        participation.setServiceCompleted(true);
+        participation.setStatus(ParticipationStatus.APPROVED);
         boardParticipationRepository.save(participation);
     }
 
-    // 📌 특정 게시글에 참여한 사용자 목록 조회
-    public List<BoardParticipationDto> getParticipantsByBoard(Long boardId) {
-        return boardParticipationRepository.findByBoardId(boardId).stream()
+    // 📌 특정 게시글의 참여 신청 목록 조회 (PENDING 상태인 신청만 조회)
+    public List<BoardParticipationDto> getPendingParticipants(Long boardId) {
+        return boardParticipationRepository.findByBoardIdAndStatus(boardId, ParticipationStatus.PENDING).stream()
                 .map(part -> new BoardParticipationDto(
                         part.getId(),
                         part.getBoard().getId(),
                         part.getUser().getId(),
-                        part.isApproved(),
-                        part.isServiceCompleted()))
+                        part.getStatus(),
+                        part.getRequestedAt(),
+                        part.getApprovedAt()))
                 .collect(Collectors.toList());
     }
 }

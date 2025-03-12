@@ -1,28 +1,43 @@
 package com.example.capstone2.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BoardParticipation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 📌 참가 신청한 게시글
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+    // 📌 참가 신청한 사용자
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 📌 참여 승인 여부
-    private boolean approved = false;
+    // 📌 참가 상태 (PENDING, APPROVED, REJECTED, COMPLETED)
+    @Enumerated(EnumType.STRING)
+    private ParticipationStatus status;
 
-    // 📌 서비스 완료 여부 (참여자가 확인해야 크레딧 지급)
-    private boolean serviceCompleted = false;
+    // 📌 참가 요청 시간
+    private LocalDateTime requestedAt;
+
+    // 📌 승인 시간
+    private LocalDateTime approvedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.requestedAt = LocalDateTime.now();
+    }
 }
