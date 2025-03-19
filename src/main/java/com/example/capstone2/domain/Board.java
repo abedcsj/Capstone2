@@ -19,7 +19,7 @@ public class Board {
     // 📌게시글 작성자
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User owner;
 
     private String title;
     private String description;

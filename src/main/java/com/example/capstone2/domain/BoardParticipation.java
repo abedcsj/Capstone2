@@ -26,7 +26,7 @@ public class BoardParticipation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 📌 참가 상태 (PENDING, APPROVED, REJECTED, COMPLETED)
+    // 📌 참가 상태 (PENDING, APPROVED, REJECTED, REFUNDED)
     @Enumerated(EnumType.STRING)
     private ParticipationStatus status;
 
@@ -36,8 +36,20 @@ public class BoardParticipation {
     // 📌 승인 시간
     private LocalDateTime approvedAt;
 
+    // 📌 크레딧 거래와 연계
+    @OneToOne(mappedBy = "boardParticipation", cascade = CascadeType.ALL)
+    private Credit credit;
+
     @PrePersist
     public void prePersist() {
         this.requestedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        // 참가가 승인될 때 승인 시간 설정
+        if (this.status == ParticipationStatus.APPROVED && this.approvedAt == null) {
+            this.approvedAt = LocalDateTime.now();
+        }
     }
 }
