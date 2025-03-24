@@ -25,7 +25,7 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Board board = new Board();
-        board.setUser(user);
+        board.setOwner(user);
         board.setTitle(boardDto.getTitle());
         board.setDescription(boardDto.getDescription());
         board.setRequest(boardDto.isRequest());
@@ -43,7 +43,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        if (!board.getUser().getId().equals(boardDto.getUserId())) {
+        if (!board.getOwner().getId().equals(boardDto.getUserId())) {
             throw new IllegalArgumentException("게시판 작성자가 아니므로 수정 권한이 없습니다.");
         }
 
@@ -62,7 +62,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        if (!board.getUser().getId().equals(userId)) {
+        if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("게시판 작성자가 아니므로 삭제 권한이 없습니다.");
         }
 
@@ -87,7 +87,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        if (!board.getUser().getId().equals(userId)) {
+        if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("게시글 작성자만 모집 상태를 변경할 수 있습니다.");
         }
 
@@ -101,7 +101,7 @@ public class BoardService {
                 .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt())) // 최신순 정렬
                 .map(board -> new BoardDto(
                         board.getId(),
-                        board.getUser().getId(),
+                        board.getOwner().getId(),
                         board.getTitle(),
                         board.getDescription(),
                         board.isRequest(),
@@ -121,7 +121,7 @@ public class BoardService {
 
         return new BoardDto(
                 board.getId(),
-                board.getUser().getId(),
+                board.getOwner().getId(),
                 board.getTitle(),
                 board.getDescription(),
                 board.isRequest(),
