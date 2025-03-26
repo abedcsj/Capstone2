@@ -18,6 +18,7 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
+    private int credit;
 
     // 📌사용자 역할 (USER or ADMIN)
     @Enumerated(EnumType.STRING)

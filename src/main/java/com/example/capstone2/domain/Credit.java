@@ -29,6 +29,10 @@
         // 📌전송된 크레딧 수량
         private int amount;
 
+        @ManyToOne
+        @JoinColumn(name = "board_id")
+        private Board board;
+
         // 📌크레딧 유형 (SEND, RECEIVE)
         @Enumerated(EnumType.STRING)
         private CreditType type;

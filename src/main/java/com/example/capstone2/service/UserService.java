@@ -30,6 +30,7 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword())); // ✅ 올바르게 수정
         user.setRole(Role.USER);
+        user.setCredit(10);
 
         userRepository.save(user);
     }
@@ -50,7 +51,10 @@ public class UserService {
     public void updateUser(Long userId, UserDto userDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
+        if (!user.getEmail().equals(userDto.getEmail()) &&
+                userRepository.existsByEmail(userDto.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
 
@@ -68,7 +72,7 @@ public class UserService {
     // 📌 사용자 강제 탈퇴 (관리자 기능)
     public void deleteUserByAdmin(Long userId, User admin) {
         if (admin.getRole() != Role.ADMIN) {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+            throw new AccessDeniedException("관리자 권한이 없습니다.");
         }
 
         User user = userRepository.findById(userId)

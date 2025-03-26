@@ -20,6 +20,7 @@ public class BoardDto {
     private boolean isRequest;
     private int likeCount;
     private Category category;
+    private int creditPrice;
     private boolean isClosed; // 모집 완료 여부
     private LocalDateTime createdAt; // 생성 시간
     private LocalDateTime updatedAt; // 수정 시간

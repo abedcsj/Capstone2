@@ -1,5 +1,6 @@
 package com.example.capstone2.dto;
 
+import com.example.capstone2.domain.Board;
 import com.example.capstone2.domain.CreditStatus;
 import com.example.capstone2.domain.CreditType;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ public class CreditDto {
     private Long id;
     private Long fromUserId;
     private Long toUserId;
+    private Long boardId;
     private int amount;
     private CreditType type;
     private CreditStatus status;
