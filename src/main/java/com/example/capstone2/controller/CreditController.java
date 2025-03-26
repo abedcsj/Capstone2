@@ -45,4 +45,4 @@ public class CreditController {
                                                         @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(creditService.updateCreditStatus(creditId, status, user));
     }
-}ㅎ
+}
