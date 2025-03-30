@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Builder
 public class ReviewDto {
     // 요청용
+    private Long id;              
     private Long reviewerId;
     private Long revieweeId;
     private String content;
     private int rating;
 
     // 응답용
-    private Long id;
     private LocalDateTime createdAt;
 }
