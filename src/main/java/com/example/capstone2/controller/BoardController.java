@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
@@ -72,6 +73,7 @@ public class BoardController {
     public ResponseEntity<BoardDto> getBoardById(@PathVariable Long boardId) {
         return ResponseEntity.ok(boardService.getBoardById(boardId));
     }
+
     // 📌 특정 게시글에 참여한 사용자 목록 조회 (APPROVED 상태만)
     @GetMapping("/{boardId}/participants")
     public ResponseEntity<List<BoardParticipationDto>> getParticipantsByBoard(@PathVariable Long boardId) {

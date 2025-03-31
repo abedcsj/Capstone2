@@ -29,6 +29,10 @@
         // 📌전송된 크레딧 수량
         private int amount;
 
+        @OneToOne
+        @JoinColumn(name = "board_participation_id")
+        private BoardParticipation boardParticipation;
+
         @ManyToOne
         @JoinColumn(name = "board_id")
         private Board board;

@@ -117,6 +117,16 @@ public class CreditService {
                 .collect(Collectors.toList());
     }
 
+    // 📌 관리자 권한으로 특정 사용자의 크레딧 내역 조회
+    public List<CreditDto> getUserCreditsByUserId(Long userId) {
+        List<Credit> sentCredits = creditRepository.findByFromUserId(userId);
+        List<Credit> receivedCredits = creditRepository.findByToUserId(userId);
+
+        return Stream.concat(sentCredits.stream(), receivedCredits.stream())
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     // 📌 엔티티 -> DTO 변환
     private CreditDto convertToDto(Credit credit) {
         return new CreditDto(

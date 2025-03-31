@@ -17,7 +17,7 @@ public class BoardParticipationController {
 
     private final BoardParticipationService boardParticipationService;
 
-    // 📌 게시글 참여 신청 API (PENDING 상태로 저장)
+    // 📌 참가자가 게시글 참여 신청 API (PENDING 상태로 저장)
     @PostMapping("/request")
     public ResponseEntity<String> requestParticipation(@RequestParam Long boardId, @AuthenticationPrincipal User user) {
         try {

@@ -12,15 +12,24 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
-    private String name;
+    private String username;
     private String email;
     private String password;
     private Role role;
 
+
     public UserDto(Long id, String name, String email, Role role) {
         this.id = id;
-        this.name = name;
+        this.username = name;
         this.email = email;
         this.role = role;
+    }
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginReqDto {
+        private String username;
+        private String password;
     }
 }

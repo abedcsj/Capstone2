@@ -1,27 +1,25 @@
 package com.example.capstone2.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO → IDENTITY가 일반적
     private Long id;
-    private String name;
-    private String birthDate;
-    private String phoneNumber;
+
+    private String username;
     private String email;
     private String password;
     private int credit;
 
-    // 📌사용자 역할 (USER or ADMIN)
     @Enumerated(EnumType.STRING)
-    private Role role;
-
+    private Role role; // USER or ADMIN
 }
