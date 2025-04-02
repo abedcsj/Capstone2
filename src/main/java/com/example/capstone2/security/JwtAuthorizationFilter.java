@@ -1,6 +1,9 @@
 package com.example.capstone2.security;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.capstone2.domain.User;
+import com.example.capstone2.exception.NoMatchingDataException;
 import com.example.capstone2.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,12 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -52,29 +53,31 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String accessToken = jwtHeader.substring(tokenPrefix.length());
 
         try {
-            // ⬇️ userId + role 디코딩
-            Long userId = JWT.require(authService.getTokenAlgorithm())
+            // ⬇️ JWT 디코딩
+            DecodedJWT decodedJWT = JWT.require(authService.getTokenAlgorithm())
                     .build()
-                    .verify(accessToken)
-                    .getClaim("id").asLong();
+                    .verify(accessToken);
 
-            String role = JWT.require(authService.getTokenAlgorithm())
-                    .build()
-                    .verify(accessToken)
-                    .getClaim("role").asString();
+            Long userId = decodedJWT.getClaim("id").asLong();
 
-            // ⬇️ Spring 권한 객체 생성
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+            // DB에서 사용자 조회
+            User user = userRepository.findEntityGraphRoleTypeById(userId)
+                    .orElseThrow(() -> new NoMatchingDataException("존재하지 않는 사용자 ID: " + userId));
+
+            // PrincipalDetails 생성
+            PrincipalDetails principalDetails = new PrincipalDetails(user);
+
+            // 인증 객체 생성 및 등록
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userId, // 또는 PrincipalDetails(user)
+                    principalDetails,
                     null,
-                    List.of(authority)
+                    principalDetails.getAuthorities()
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
-            SecurityContextHolder.clearContext();
+            SecurityContextHolder.clearContext(); // 유효하지 않으면 인증 정보 초기화
         }
 
         chain.doFilter(request, response);

@@ -35,7 +35,7 @@ public class AdminController {
     @DeleteMapping("/board/{boardId}")
     public ResponseEntity<String> deleteBoard(@PathVariable Long boardId,
                                               @AuthenticationPrincipal PrincipalDetails principal) {
-        boardService.deleteBoardByAdmin(boardId, principal.getUser());
+        boardService.deleteBoardByAdmin(boardId);
         return ResponseEntity.ok("관리자의 권한으로 게시글이 삭제되었습니다.");
     }
     //사용자 목록 조회

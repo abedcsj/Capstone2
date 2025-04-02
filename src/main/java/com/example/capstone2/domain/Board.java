@@ -24,9 +24,6 @@ public class Board {
     private String title;
     private String description;
 
-    // 📌요청글 여부
-    private boolean isRequest;
-
     // 📌좋아요 개수
     private int likeCount;
 

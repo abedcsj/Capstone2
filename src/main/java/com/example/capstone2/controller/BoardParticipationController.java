@@ -1,8 +1,8 @@
 package com.example.capstone2.controller;
 
 import com.example.capstone2.dto.BoardParticipationDto;
+import com.example.capstone2.security.PrincipalDetails;
 import com.example.capstone2.service.BoardParticipationService;
-import com.example.capstone2.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,9 +19,10 @@ public class BoardParticipationController {
 
     // 📌 참가자가 게시글 참여 신청 API (PENDING 상태로 저장)
     @PostMapping("/request")
-    public ResponseEntity<String> requestParticipation(@RequestParam Long boardId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<String> requestParticipation(@RequestParam Long boardId,
+                                                       @AuthenticationPrincipal PrincipalDetails principal) {
         try {
-            boardParticipationService.requestParticipation(boardId, user);
+            boardParticipationService.requestParticipation(boardId, principal.getUser());
             return ResponseEntity.ok("게시글 참여 신청이 완료되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("참여 신청 실패: " + e.getMessage());
@@ -30,9 +31,10 @@ public class BoardParticipationController {
 
     // 📌 참가자가 환불 요청 API (APPROVED → REFUNDED)
     @PutMapping("/{participationId}/refund")
-    public ResponseEntity<String> requestRefund(@PathVariable Long participationId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<String> requestRefund(@PathVariable Long participationId,
+                                                @AuthenticationPrincipal PrincipalDetails principal) {
         try {
-            boardParticipationService.requestRefund(participationId, user);
+            boardParticipationService.requestRefund(participationId, principal.getUser());
             return ResponseEntity.ok("환불 요청이 완료되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("환불 요청 실패: " + e.getMessage());

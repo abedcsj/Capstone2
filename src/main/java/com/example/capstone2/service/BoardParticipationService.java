@@ -1,12 +1,14 @@
 package com.example.capstone2.service;
 
 import com.example.capstone2.domain.*;
-import com.example.capstone2.dto.BoardParticipationDto;
 import com.example.capstone2.repository.BoardParticipationRepository;
 import com.example.capstone2.repository.BoardRepository;
-import com.example.capstone2.repository.UserRepository;
 import com.example.capstone2.repository.CreditRepository;
+import com.example.capstone2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +34,25 @@ public class BoardParticipationService {
             throw new IllegalStateException("게시글의 소유자가 존재하지 않습니다.");
         }
 
+        if (board.getOwner().getId().equals(user.getId())) {
+            throw new AccessDeniedException("자신의 게시글에는 참여 신청할 수 없습니다.");
+        }
+
+        int creditAmount = board.getCreditPrice();
+
+        if (user.getCredit() < creditAmount) {
+            throw new IllegalStateException("보유 크레딧이 부족합니다.");
+        }
+
+        // 참가자가 크레딧 차감
+        user.setCredit(user.getCredit() - creditAmount);
+
         // 참가 요청 생성
         BoardParticipation participation = new BoardParticipation();
         participation.setBoard(board);
         participation.setUser(user);
         participation.setStatus(ParticipationStatus.PENDING);
         participation.setRequestedAt(LocalDateTime.now());
-
-        int creditAmount = board.getCreditPrice();
 
         // 📌 참가자가 크레딧을 보냄 (SEND)
         Credit sendCredit = new Credit();
@@ -64,7 +77,7 @@ public class BoardParticipationService {
                 .orElseThrow(() -> new IllegalArgumentException("참여 정보를 찾을 수 없습니다."));
 
         if (!participation.getUser().getId().equals(user.getId())) {
-            throw new IllegalStateException("본인만 환불 요청이 가능합니다.");
+            throw new AccessDeniedException("본인만 환불 요청이 가능합니다.");
         }
 
         if (participation.getStatus() != ParticipationStatus.APPROVED) {
@@ -83,5 +96,4 @@ public class BoardParticipationService {
         creditRepository.save(credit);
         boardParticipationRepository.save(participation);
     }
-
 }

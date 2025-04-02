@@ -17,7 +17,6 @@ public class BoardDto {
     private Long userId;
     private String title;
     private String description;
-    private boolean isRequest;
     private int likeCount;
     private Category category;
     private int creditPrice;
