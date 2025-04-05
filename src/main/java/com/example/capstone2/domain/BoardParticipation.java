@@ -36,9 +36,7 @@ public class BoardParticipation {
     // 📌 승인 시간
     private LocalDateTime approvedAt;
 
-    // 📌 크레딧 거래와 연계
-    @OneToOne(mappedBy = "boardParticipation", cascade = CascadeType.ALL)
-    private Credit credit;
+    private int creditAmount;
 
     @PrePersist
     public void prePersist() {

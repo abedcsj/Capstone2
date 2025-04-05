@@ -1,4 +1,4 @@
-package com.example.capstone2.config;
+package com.example.capstone2;
 
 import com.example.capstone2.repository.UserRepository;
 import com.example.capstone2.security.*;
@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
@@ -39,8 +41,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/token/**").permitAll() // 로그인/토큰
                         .requestMatchers("/api/users/register").permitAll()            // 회원가입은 모두 허용!
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")             // 관리자 전용
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")        // 관리자 전용
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")  // 그 외 유저용
+                        .requestMatchers("/api/board-participation/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
 

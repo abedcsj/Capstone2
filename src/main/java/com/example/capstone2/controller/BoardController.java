@@ -2,6 +2,7 @@ package com.example.capstone2.controller;
 
 import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.security.PrincipalDetails;
+import com.example.capstone2.service.BoardParticipationService;
 import com.example.capstone2.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+
 
 
     // 게시글 작성
@@ -61,5 +63,23 @@ public class BoardController {
         boardService.toggleClosed(principal.getUser().getId(), boardId);
         return ResponseEntity.ok("모집 상태가 변경되었습니다.");
     }
+
+
+    // 📌 작성자가 신청 승인
+    @PutMapping("/{participationId}/approve")
+    public ResponseEntity<String> approveParticipation(@PathVariable Long participationId,
+                                                       @AuthenticationPrincipal PrincipalDetails principal) {
+        boardService.approveParticipation(participationId, principal.getUser());
+        return ResponseEntity.ok("참여가 승인되었습니다.");
+    }
+
+    // 📌 작성자가 신청 거절
+    @PutMapping("/{participationId}/reject")
+    public ResponseEntity<String> rejectParticipation(@PathVariable Long participationId,
+                                                      @AuthenticationPrincipal PrincipalDetails principal) {
+        boardService.rejectParticipation(participationId, principal.getUser());
+        return ResponseEntity.ok("참여가 거절되었습니다.");
+    }
+
 
 }

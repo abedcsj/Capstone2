@@ -44,40 +44,44 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String jwtHeader = request.getHeader(externalProperties.getAccessKey());
 
+        // JWT 헤더가 없거나 잘못된 형식이면 필터 통과시킴
         if (jwtHeader == null || !jwtHeader.startsWith(externalProperties.getTokenPrefix())) {
             chain.doFilter(request, response);
             return;
         }
 
+        // "Bearer " 접두사 제거
         String tokenPrefix = externalProperties.getTokenPrefix();
         String accessToken = jwtHeader.substring(tokenPrefix.length());
 
         try {
-            // ⬇️ JWT 디코딩
+            // JWT 검증 및 파싱
             DecodedJWT decodedJWT = JWT.require(authService.getTokenAlgorithm())
                     .build()
                     .verify(accessToken);
 
             Long userId = decodedJWT.getClaim("id").asLong();
 
-            // DB에서 사용자 조회
+            // DB에서 사용자 정보 조회
             User user = userRepository.findEntityGraphRoleTypeById(userId)
                     .orElseThrow(() -> new NoMatchingDataException("존재하지 않는 사용자 ID: " + userId));
 
             // PrincipalDetails 생성
             PrincipalDetails principalDetails = new PrincipalDetails(user);
 
-            // 인증 객체 생성 및 등록
+            // 인증 객체 생성
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     principalDetails,
                     null,
                     principalDetails.getAuthorities()
             );
 
+            // SecurityContext에 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
-            SecurityContextHolder.clearContext(); // 유효하지 않으면 인증 정보 초기화
+            e.printStackTrace();
+            SecurityContextHolder.clearContext();
         }
 
         chain.doFilter(request, response);

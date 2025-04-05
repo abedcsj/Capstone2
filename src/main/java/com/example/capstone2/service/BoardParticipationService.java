@@ -3,25 +3,20 @@ package com.example.capstone2.service;
 import com.example.capstone2.domain.*;
 import com.example.capstone2.repository.BoardParticipationRepository;
 import com.example.capstone2.repository.BoardRepository;
-import com.example.capstone2.repository.CreditRepository;
 import com.example.capstone2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BoardParticipationService {
     private final BoardParticipationRepository boardParticipationRepository;
     private final BoardRepository boardRepository;
-    private final CreditRepository creditRepository;
+    private final UserRepository userRepository;
 
     // 📌 게시글 참여 신청 (PENDING 상태 & 크레딧 결제)
     @Transactional
@@ -46,6 +41,7 @@ public class BoardParticipationService {
 
         // 참가자가 크레딧 차감
         user.setCredit(user.getCredit() - creditAmount);
+        userRepository.save(user);
 
         // 참가 요청 생성
         BoardParticipation participation = new BoardParticipation();
@@ -53,20 +49,8 @@ public class BoardParticipationService {
         participation.setUser(user);
         participation.setStatus(ParticipationStatus.PENDING);
         participation.setRequestedAt(LocalDateTime.now());
+        participation.setCreditAmount(creditAmount);
 
-        // 📌 참가자가 크레딧을 보냄 (SEND)
-        Credit sendCredit = new Credit();
-        sendCredit.setFromUser(user);
-        sendCredit.setToUser(owner);
-        sendCredit.setAmount(creditAmount);
-        sendCredit.setType(CreditType.SEND);
-        sendCredit.setStatus(CreditStatus.PENDING);
-        sendCredit.setTransactionTime(LocalDateTime.now());
-
-        creditRepository.save(sendCredit);
-
-        // 참가 신청과 크레딧 연결
-        participation.setCredit(sendCredit);
         boardParticipationRepository.save(participation);
     }
 
@@ -87,13 +71,14 @@ public class BoardParticipationService {
         // 환불 상태 변경
         participation.setStatus(ParticipationStatus.REFUNDED);
 
-        Credit credit = participation.getCredit();
-        credit.setStatus(CreditStatus.REFUNDED);
+        int refundedAmount = participation.getCreditAmount();
+        user.setCredit(user.getCredit() + refundedAmount);
+        userRepository.save(user);
 
-        User sender = credit.getFromUser();
-        sender.setCredit(sender.getCredit() + credit.getAmount());
+        User owner = participation.getBoard().getOwner();
+        owner.setCredit(owner.getCredit() - refundedAmount);
+        userRepository.save(owner);
 
-        creditRepository.save(credit);
         boardParticipationRepository.save(participation);
     }
 }

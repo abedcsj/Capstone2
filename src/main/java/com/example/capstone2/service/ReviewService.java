@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -36,7 +38,6 @@ public class ReviewService {
         review.setRating(dto.getRating());
 
         Review savedReview = reviewRepository.save(review);
-
         return toDto(savedReview);
     }
 
@@ -48,8 +49,6 @@ public class ReviewService {
 
         review.setContent(dto.getContent());
         review.setRating(dto.getRating());
-
-
         return toDto(review);
     }
 
@@ -62,6 +61,22 @@ public class ReviewService {
         reviewRepository.deleteById(id);
     }
 
+    // 리뷰 단건 조회
+    @Transactional
+    public ReviewDto getReviewById(Long id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+        return toDto(review);
+    }
+
+    // 특정 사용자의 리뷰 목록 조회
+    @Transactional
+    public List<ReviewDto> getReviewsByRevieweeId(Long revieweeId) {
+        List<Review> reviews = reviewRepository.findByRevieweeId(revieweeId);
+        return reviews.stream().map(this::toDto).toList();
+    }
+
+    // Entity -> DTO
     private ReviewDto toDto(Review review) {
         return ReviewDto.builder()
                 .id(review.getId())

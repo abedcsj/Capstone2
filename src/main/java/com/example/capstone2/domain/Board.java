@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -35,6 +37,11 @@ public class Board {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardParticipation> participants = new ArrayList<>();
+
 
     // 📌게시글 작성 시간
     private LocalDateTime createdAt;
