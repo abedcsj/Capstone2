@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Authentication authentication = null;
         UserDto.LoginReqDto userLoginDto = null;
 
-        //1번. 로그인에 필요한 아이디(username)이랑 비번(password)가 있는지 먼저 확인!!!
+        //로그인에 필요한 아이디(username)이랑 비번(password)가 있는지 먼저 확인
         try {
             userLoginDto = objectMapper.readValue(request.getInputStream(), UserDto.LoginReqDto.class);
         } catch (IOException e) {
@@ -46,14 +46,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             //e.printStackTrace();
         }
 
-        //1번. 로그인에 필요한 아이디(username)이랑 비번(password)으로 실제 존재하는 고객인지 확인!!!
-        //=> 그 정보로 Authentication 객체를 만들꺼에요!!!
+        //로그인에 필요한 아이디(username)이랑 비번(password)으로 실제 존재하는 고객인지 확인
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(), userLoginDto.getPassword());
             authentication = authenticationManager.authenticate(authenticationToken);
         } catch (AuthenticationException e) {
             System.out.println("2. login attemptAuthentication : username, password Not Matched?!");
-            //e.printStackTrace();
         }
 
         return authentication;
@@ -73,6 +71,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(externalProperties.getAccessKey(), externalProperties.getTokenPrefix() + accessToken);
 
 
-        System.out.println("successfulAuthentication : login success?!");
+        System.out.println("successfulAuthentication : login success");
     }
 }

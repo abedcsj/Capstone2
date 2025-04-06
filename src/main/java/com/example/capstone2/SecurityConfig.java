@@ -22,7 +22,7 @@ public class SecurityConfig {
     private final AuthService authService;
     private final ExternalProperties externalProperties;
     private final UserRepository userRepository;
-    private final PrincipalDetailsService principalDetailsService;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -39,12 +39,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/token/**").permitAll() // 로그인/토큰
-                        .requestMatchers("/api/users/register").permitAll()            // 회원가입은 모두 허용!
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")        // 관리자 전용
-                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")  // 그 외 유저용
-                        .requestMatchers("/api/board-participation/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated()
+                        // 인증 없이 접근 가능한 경로들
+                        .requestMatchers("/api/auth/**", "/api/token/**", "/api/users/register").permitAll()
+                        // 관리자 전용
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 그 외 모든 요청은 USER 또는 ADMIN 권한만 있으면 접근 가능
+                        .anyRequest().hasAnyRole("USER", "ADMIN")
                 )
 
                 .addFilter(jwtAuthenticationFilter)

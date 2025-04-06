@@ -83,7 +83,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             e.printStackTrace();
             SecurityContextHolder.clearContext();
         }
-
         chain.doFilter(request, response);
     }
 }

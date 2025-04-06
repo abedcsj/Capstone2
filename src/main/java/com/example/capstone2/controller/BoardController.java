@@ -19,7 +19,6 @@ public class BoardController {
     private final BoardService boardService;
 
 
-
     // 게시글 작성
     @PostMapping
     public ResponseEntity<String> createBoard(@AuthenticationPrincipal PrincipalDetails principal,
@@ -45,7 +44,6 @@ public class BoardController {
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
-
     // 게시글 단건 조회
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardDto> getBoard(@PathVariable Long boardId) {
@@ -63,7 +61,6 @@ public class BoardController {
         boardService.toggleClosed(principal.getUser().getId(), boardId);
         return ResponseEntity.ok("모집 상태가 변경되었습니다.");
     }
-
 
     // 📌 작성자가 신청 승인
     @PutMapping("/{participationId}/approve")

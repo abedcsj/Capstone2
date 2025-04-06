@@ -12,7 +12,7 @@ import lombok.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO → IDENTITY가 일반적
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
@@ -21,5 +21,6 @@ public class User {
     private int credit;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // USER or ADMIN
+    @Column(nullable = false)
+    private Role role;
 }
