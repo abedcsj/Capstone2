@@ -14,7 +14,7 @@
 
             <form id="login-form">
                 <div class="mb-3">
-                    <label for="username" class="form-label">아이디</label>
+                    <label for="username" class="form-label">아이디 (이메일)</label>
                     <input type="text" class="form-control" id="username" placeholder="아이디 입력" required>
                 </div>
                 <div class="mb-3">
@@ -23,7 +23,8 @@
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">로그인</button>
-                    <a href="/register" class="btn btn-outline-secondary">회원가입</a></div>
+                    <a href="/register" class="btn btn-outline-secondary">회원가입</a>
+                </div>
             </form>
 
             <div id="message" class="mt-3"></div>
@@ -32,53 +33,44 @@
 </div>
 
 <script>
-    document.getElementById('login-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        const loginData = {
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-        };
+            const loginData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
 
-        try {
-            const res = await axios.post('/api/login', loginData, {
-                headers: {
-                    'Content-Type': 'application/json'
+            try {
+                const res = await axios.post('/api/auth/login', loginData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const accessToken = res.headers['authorization'];
+                const refreshToken = res.headers['authorization-refresh'];
+
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+
+                document.getElementById('message').innerHTML =
+                    `<div class="alert alert-success">
+                        로그인 성공! <br> 토큰이 저장되었습니다.
+                    </div>`;
+
+                // window.location.href = '/mypage'; // 필요시 페이지 이동 가능
+
+            } catch (err) {
+                let msg = '로그인 실패';
+                if (err.response?.status === 401) {
+                    msg = '아이디 또는 비밀번호가 일치하지 않습니다.';
                 }
-            });
-
-            // ✅ access, refresh 토큰 헤더에서 받기
-            const accessToken = res.headers['authorization']; // ex: Bearer xxxxx
-            const refreshToken = res.headers['refresh'];
-
-            // ✅ 저장
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
-
-            // ✅ 토큰으로 사용자 정보 요청
-            const userRes = await axios.get('/api/users/me', {
-                headers: {
-                    'Authorization': accessToken
-                }
-            });
-
-            const user = userRes.data;
-            document.getElementById('message').innerHTML =
-                `<div class="alert alert-success">
-          로그인 성공! <br> 안녕하세요, <strong>${user.username}</strong>님!
-        </div>`;
-
-            // ✅ 예: 이후 리디렉션 (원하는 경로로 변경 가능)
-            // window.location.href = '/mypage';
-
-        } catch (err) {
-            let msg = '로그인 실패';
-            if (err.response?.status === 401) {
-                msg = '아이디 또는 비밀번호가 일치하지 않습니다.';
+                document.getElementById('message').innerHTML =
+                    `<div class="alert alert-danger">${msg}</div>`;
             }
-            document.getElementById('message').innerHTML =
-                `<div class="alert alert-danger">${msg}</div>`;
-        }
+        });
     });
 </script>
 </body>
