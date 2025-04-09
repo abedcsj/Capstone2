@@ -6,13 +6,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ViewController {
     @GetMapping("/")
-    public String redirectToRegister() {
-        return "redirect:/register";
+    public String redirectToLogin() {
+        return "redirect:/login";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        System.out.println("첫 화면 다이렉트");
+        return "login"; // resources/templates/login.html
     }
 
     @GetMapping("/register")
-    public String registerPage() {
-        System.out.println("첫 화면 다이렉트");
-        return "register"; // resources/templates/register.html
+    public String showRegisterPage() {
+        return "register"; // templates/register.html
     }
+
 }
