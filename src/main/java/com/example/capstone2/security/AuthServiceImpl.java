@@ -85,7 +85,6 @@ public class AuthServiceImpl implements AuthService {
     public void revokeRefreshToken(Long userId) {
         refreshTokenRepository.deleteAll(refreshTokenRepository.findByUserId(userId));
     }
-
     /**
      * Refresh Token 검증
      */

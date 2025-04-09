@@ -25,20 +25,17 @@ public class UserController {
         userService.register(userDto);
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
-
     //사용자 정보 수정
     @PatchMapping
     public ResponseEntity<String> update(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody UserDto userDto) {
         userService.updateUser(principal.getUser().getId(), userDto);
         return ResponseEntity.ok("사용자 정보가 수정되었습니다.");
     }
-
     //사용자 정보 조회
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMyInfo(@AuthenticationPrincipal PrincipalDetails principal) {
         return ResponseEntity.ok(userService.getUserById(principal.getUser().getId()));
     }
-
     //사용자 탈퇴
     @DeleteMapping
     public ResponseEntity<String> deleteUser(@AuthenticationPrincipal PrincipalDetails principal) {

@@ -18,18 +18,11 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
-    private final BoardService boardService;
 
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUserByAdmin(userId);
         return ResponseEntity.ok("관리자의 권한으로 사용자가 삭제되었습니다.");
-    }
-
-    @DeleteMapping("/board/{boardId}")
-    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId) {
-        boardService.deleteBoardByAdmin(boardId);
-        return ResponseEntity.ok("관리자의 권한으로 게시글이 삭제되었습니다.");
     }
 
     @GetMapping("/users")

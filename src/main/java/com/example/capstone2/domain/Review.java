@@ -15,17 +15,23 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // 📌리뷰 작성자 (서비스 이용자)
+
+    // 리뷰 작성자
     @ManyToOne
     @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
-    // 📌리뷰 대상 (서비스 제공자)
+
+    // 리뷰 대상자
     @ManyToOne
     @JoinColumn(name = "reviewee_id", nullable = false)
     private User reviewee;
-    // 📌리뷰 내용
+
+    // 리뷰 대상 게시글
+    @ManyToOne
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
+
     private String content;
-    // 📌별점 (1~5)
     private int rating;
 
     private LocalDateTime createdAt;

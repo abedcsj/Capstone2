@@ -2,7 +2,6 @@ package com.example.capstone2.controller;
 
 import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.security.PrincipalDetails;
-import com.example.capstone2.service.BoardParticipationService;
 import com.example.capstone2.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

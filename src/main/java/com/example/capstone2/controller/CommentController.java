@@ -1,35 +1,42 @@
 package com.example.capstone2.controller;
 
 import com.example.capstone2.dto.CommentDto;
+import com.example.capstone2.security.PrincipalDetails;
 import com.example.capstone2.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/comments")
 @RequiredArgsConstructor
+@RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentService commentService;
-    // 댓글 작성
+
     @PostMapping
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto dto) {
-        CommentDto created = commentService.createComment(dto);
+    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto dto,
+                                                    @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long userId = principalDetails.getUser().getId();
+        CommentDto created = commentService.createComment(dto, userId);
         return ResponseEntity.ok(created);
     }
-    // 게시글에 달린 댓글 목록 조회
+
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<List<CommentDto>> getCommentsByBoard(@PathVariable Long boardId) {
-        List<CommentDto> comments = commentService.getCommentsByBoardId(boardId);
+    public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long boardId,
+                                                        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long userId = principalDetails.getUser().getId();
+        List<CommentDto> comments = commentService.getCommentsByBoardId(boardId, userId);
         return ResponseEntity.ok(comments);
     }
-    // 댓글 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
+                                              @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long userId = principalDetails.getUser().getId();
+        commentService.deleteComment(commentId, userId);
         return ResponseEntity.noContent().build();
     }
 }

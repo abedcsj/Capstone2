@@ -8,8 +8,6 @@ import com.example.capstone2.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +42,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-        if (!board.getOwner().getId().equals(userId) && !isAdmin()) {
+        if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("수정 권한 없음");
         }
 
@@ -60,17 +58,10 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-        if (!board.getOwner().getId().equals(userId) && !isAdmin()) {
+        if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("삭제 권한 없음");
         }
 
-        boardRepository.delete(board);
-    }
-
-    @Transactional
-    public void deleteBoardByAdmin(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
         boardRepository.delete(board);
     }
 
@@ -92,8 +83,8 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-        if (!board.getOwner().getId().equals(userId) && !isAdmin()) {
-            throw new AccessDeniedException("수정 권한 없음");
+        if (!board.getOwner().getId().equals(userId)) {
+            throw new AccessDeniedException("상태 변경 권한 없음");
         }
 
         board.setClosed(!board.isClosed());
@@ -153,11 +144,5 @@ public class BoardService {
         userRepository.save(sender);
 
         boardParticipationRepository.save(participation);
-    }
-
-    private boolean isAdmin() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }

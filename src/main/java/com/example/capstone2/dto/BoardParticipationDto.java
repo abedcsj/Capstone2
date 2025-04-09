@@ -17,8 +17,5 @@ public class BoardParticipationDto {
     private ParticipationStatus status;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
-
-    // 📌 크레딧 거래 정보 추가
-    private Long creditId;
-    private int amount;
+    private int creditAmount;
 }

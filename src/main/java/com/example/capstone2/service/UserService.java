@@ -39,7 +39,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
     public void updateUser(Long targetUserId, UserDto userDto) {
         User user = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
