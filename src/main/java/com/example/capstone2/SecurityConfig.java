@@ -47,7 +47,7 @@ public class SecurityConfig {
 //                        .anyRequest().hasAnyRole("USER", "ADMIN")
 //                ) // 프론트 구현시 에러나서 원래 코드 주석처리
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/register", "/api/auth/login","/login", "/api/users/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/mypage", "/api/auth/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().hasAnyRole("USER", "ADMIN")
                 )
