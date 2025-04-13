@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ViewController {
+
     @GetMapping("/")
     public String redirectToLogin() {
         return "redirect:/login";
@@ -21,4 +22,8 @@ public class ViewController {
         return "register"; // templates/register.html
     }
 
+    @GetMapping("/mypage") // ✅ 로그인 후 보여줄 내 정보 페이지
+    public String myPage() {
+        return "mypage"; // templates/mypage.html
+    }
 }
