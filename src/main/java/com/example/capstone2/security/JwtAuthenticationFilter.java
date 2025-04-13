@@ -71,6 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = authService.createAccessToken(principalDetails.getUser().getId());
         response.addHeader(externalProperties.getAccessKey(), externalProperties.getTokenPrefix() + accessToken);
 
+        response.setHeader("Access-Control-Expose-Headers", "Authorization, Authorization-refresh");
 
         System.out.println("successfulAuthentication : login success");
     }
