@@ -14,7 +14,7 @@
 
             <form id="login-form">
                 <div class="mb-3">
-                    <label for="username" class="form-label">아이디 (이메일)</label>
+                    <label for="username" class="form-label">아이디</label>
                     <input type="text" class="form-control" id="username" placeholder="아이디 입력" required>
                 </div>
                 <div class="mb-3">
@@ -49,6 +49,7 @@
                     }
                 });
 
+                // ✅ 헤더 키는 소문자로 접근
                 const accessToken = res.headers['authorization'];
                 const refreshToken = res.headers['authorization-refresh'];
 
@@ -59,8 +60,11 @@
                     `<div class="alert alert-success">
                         로그인 성공! <br> 토큰이 저장되었습니다.
                     </div>`;
+                setTimeout(() => {
+                    window.location.href = '/mypage';
+                }, 300);
 
-                 window.location.href = '/mypage'; // 로그인 이후 마이 페이지로 이동
+                window.location.href = '/mypage';
 
             } catch (err) {
                 let msg = '로그인 실패';
