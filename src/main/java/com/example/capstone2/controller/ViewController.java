@@ -26,4 +26,13 @@ public class ViewController {
     public String myPage() {
         return "mypage"; // templates/mypage.html
     }
+
+    @GetMapping("/boardpage")
+    public String boardPage() { return "boardpage"; }
+
+    @GetMapping("/board/create")
+    public String createBoardPage() {
+        System.out.println("🔥 create 페이지 호출됨");
+        return "createboard"; // templates/createboard.html
+    }
 }
