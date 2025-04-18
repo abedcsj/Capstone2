@@ -30,6 +30,9 @@ public class ViewController {
     @GetMapping("/boardpage")
     public String boardPage() { return "boardpage"; }
 
-    @GetMapping("/createboard")
-    public String createBoardPage() { return "createboard"; }
+    @GetMapping("/board/create")
+    public String createBoardPage() {
+        System.out.println("🔥 create 페이지 호출됨");
+        return "createboard"; // templates/createboard.html
+    }
 }
