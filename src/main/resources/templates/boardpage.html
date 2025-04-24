@@ -13,8 +13,27 @@
         <button class="btn btn-outline-secondary" onclick="location.href='/mypage'">마이페이지</button>
     </div>
 
+    <!-- 필터 및 검색 영역 -->
+    <div class="row mb-4 g-2 align-items-end">
+        <div class="col-md-4">
+            <label for="categoryFilter" class="form-label">카테고리</label>
+            <select id="categoryFilter" class="form-select">
+                <option value="">전체 보기</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="boardIdInput" class="form-label">게시글 ID (숫자)</label>
+            <input type="number" id="boardIdInput" class="form-control" placeholder="예: 5">
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100" onclick="searchBoards()">검색</button>
+        </div>
+    </div>
+
+    <!-- 게시글 목록 -->
     <div id="board-list" class="list-group mb-4"></div>
 
+    <!-- 글 작성 버튼 -->
     <div class="text-end">
         <button class="btn btn-primary" onclick="location.href='/board/create'">게시글 작성</button>
     </div>
@@ -23,42 +42,96 @@
 <script>
     const token = localStorage.getItem('accessToken');
 
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCategoryOptions();
+        fetchBoards();
+    });
+
+    async function loadCategoryOptions() {
+        try {
+            const res = await axios.get('/api/category', {
+                headers: { Authorization: token }
+            });
+            const select = document.getElementById('categoryFilter');
+            res.data.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.text = convertCategoryToKorean(category);
+                select.appendChild(option);
+            });
+        } catch (err) {
+            console.error('카테고리 로드 실패:', err);
+        }
+    }
+
     async function fetchBoards() {
         try {
             const res = await axios.get('/api/boards', {
-                headers: {
-                    'Authorization': token
-                }
+                headers: { Authorization: token }
             });
-            const boardList = res.data;
-            const container = document.getElementById('board-list');
-            container.innerHTML = '';
-
-            boardList.forEach(board => {
-                const div = document.createElement('div');
-                div.className = 'list-group-item';
-                div.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div onclick="location.href='/board/${board.id}'" style="cursor:pointer;">
-                            <h5>${board.title}</h5>
-                            <p class="mb-1">${board.description}</p>
-                        </div>
-                        <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        } catch (error) {
+            renderBoardList(res.data.reverse());
+        } catch (err) {
             alert('게시글 목록을 불러오지 못했습니다.');
         }
+    }
+
+    async function searchBoards() {
+        const category = document.getElementById('categoryFilter').value;
+        const boardId = document.getElementById('boardIdInput').value;
+
+        if (boardId) {
+            // 게시글 ID로 검색
+            try {
+                const res = await axios.get(`/api/boards/${boardId}`, {
+                    headers: { Authorization: token }
+                });
+                renderBoardList([res.data]);
+            } catch (err) {
+                alert('해당 ID의 게시글을 찾을 수 없습니다.');
+            }
+        } else {
+            // 카테고리로 필터링
+            const url = category ? `/api/boards?category=${category}` : '/api/boards';
+            try {
+                const res = await axios.get(url, {
+                    headers: { Authorization: token }
+                });
+                renderBoardList(res.data.reverse());
+            } catch (err) {
+                alert('게시글 필터링에 실패했습니다.');
+            }
+        }
+    }
+
+    function renderBoardList(boardList) {
+        const container = document.getElementById('board-list');
+        container.innerHTML = '';
+
+        // 최신글이 1번으로 보이도록 번호 역순으로 붙임
+        const total = boardList.length;
+
+        boardList.forEach((board, idx) => {
+            const number = total - idx; // 역순 번호 부여
+            const div = document.createElement('div');
+            div.className = 'list-group-item';
+            div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div onclick="location.href='/board/${board.id}'" style="cursor:pointer;">
+                    <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
+                    <h5>(${number}) ${board.title}</h5>
+                    <p class="mb-1">${board.description}</p>
+                </div>
+                <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
+            </div>
+        `;
+            container.appendChild(div);
+        });
     }
 
     async function apply(boardId) {
         try {
             await axios.post(`/api/board-participation/request?boardId=${boardId}`, null, {
-                headers: {
-                    'Authorization': token
-                }
+                headers: { Authorization: token }
             });
             alert('참여 신청이 완료되었습니다.');
         } catch (err) {
@@ -66,7 +139,23 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', fetchBoards);
+    function convertCategoryToKorean(category) {
+        const dict = {
+            EDUCATION: "교육 & 학습",
+            IT: "IT & 개발",
+            DESIGN: "디자인 & 예술",
+            TRANSLATION: "번역 & 작문",
+            LIFESTYLE: "생활 & 취미",
+            ENGINEERING: "공학 & 과학",
+            BUSINESS: "비즈니스 & 금융",
+            VOLUNTEERING: "사회봉사 & 공익",
+            HEALTHCARE: "건강 & 의료",
+            SPORTS: "스포츠 & 트레이닝",
+            COOKING: "요리 & 베이킹",
+            ETC: "기타 맞춤형 재능"
+        };
+        return dict[category] || category;
+    }
 </script>
 </body>
 </html>
