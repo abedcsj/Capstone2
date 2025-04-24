@@ -70,7 +70,7 @@
             const res = await axios.get('/api/boards', {
                 headers: { Authorization: token }
             });
-            allBoards = res.data.reverse(); // 최신순 정렬
+            allBoards = res.data.reverse(); // 최신순
             renderBoardList(allBoards);
         } catch (err) {
             alert('게시글 목록을 불러오지 못했습니다.');
@@ -82,20 +82,16 @@
         const boardId = document.getElementById('boardIdInput').value;
 
         if (boardId) {
-            // 게시글 ID 검색은 서버에서 조회
-            axios.get(`/api/boards/${boardId}`, {
-                headers: { Authorization: token }
-            }).then(res => {
-                renderBoardList([res.data]);
-            }).catch(err => {
+            const matched = allBoards.find(b => b.id == boardId);
+            if (matched) {
+                renderBoardList([matched]);
+            } else {
                 alert('해당 ID의 게시글을 찾을 수 없습니다.');
-            });
+            }
         } else if (category) {
-            // 카테고리 필터링은 프론트에서 수행
-            const filtered = allBoards.filter(board => board.category === category);
+            const filtered = allBoards.filter(b => b.category === category);
             renderBoardList(filtered);
         } else {
-            // 전체 다시 표시
             renderBoardList(allBoards);
         }
     }
@@ -103,6 +99,7 @@
     function renderBoardList(boardList) {
         const container = document.getElementById('board-list');
         container.innerHTML = '';
+
         const total = boardList.length;
 
         boardList.forEach((board, idx) => {
@@ -110,14 +107,17 @@
             const div = document.createElement('div');
             div.className = 'list-group-item';
             div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div onclick="location.href='/board/${board.id}'" style="cursor:pointer;">
-                        <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
-                        <h5>(${number}) ${board.title}</h5>
-                        <p class="mb-1">${board.description}</p>
-                    </div>
-                    <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
+            <div class="d-flex justify-content-between align-items-center">
+                <div onclick="location.href='/board/${board.id}'" style="cursor:pointer; flex-grow: 1;">
+                    <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
+                    <h5>(${number}) ${board.title}</h5>
+                    <p class="mb-1">${board.description}</p>
                 </div>
+                <div class="ms-3">
+                    <button class="btn btn-sm btn-success me-2" onclick="event.stopPropagation(); apply(${board.id})">참여 신청</button>
+                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteBoard(${board.id})">삭제</button>
+                </div>
+            </div>
             `;
             container.appendChild(div);
         });
@@ -131,6 +131,20 @@
             alert('참여 신청이 완료되었습니다.');
         } catch (err) {
             alert('참여 신청 실패');
+        }
+    }
+
+    async function deleteBoard(boardId) {
+        if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+        try {
+            await axios.delete(`/api/boards/${boardId}`, {
+                headers: { Authorization: token }
+            });
+            alert("게시글이 삭제되었습니다.");
+            fetchBoards(); // 삭제 후 목록 갱신
+        } catch (err) {
+            alert("삭제 권한이 없습니다.");
         }
     }
 
