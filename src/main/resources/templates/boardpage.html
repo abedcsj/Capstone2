@@ -116,6 +116,10 @@
                 <div class="ms-3">
                     <button class="btn btn-sm btn-success me-2" onclick="event.stopPropagation(); apply(${board.id})">참여 신청</button>
                     <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteBoard(${board.id})">삭제</button>
+                    <button class="btn btn-sm ${board.is_closed === 1 ? 'btn-secondary' : 'btn-success'}"
+                            onclick="event.stopPropagation(); toggleRecruitment(${board.id}, ${board.is_closed})">
+                        ${board.is_closed === 1 ? '모집 마감' : '모집 중'}
+                    </button>
                 </div>
             </div>
             `;
@@ -145,6 +149,29 @@
             fetchBoards(); // 삭제 후 목록 갱신
         } catch (err) {
             alert("삭제 권한이 없습니다.");
+        }
+    }
+
+    async function toggleRecruitment(boardId, currentStatus) {
+        // 사용자가 작성한 게시물인지 확인
+        const res = await axios.get(`/api/boards/${boardId}`, {
+            headers: { Authorization: token }
+        });
+
+        if (res.data.user_id !== parseInt(localStorage.getItem('userId'))) {
+            alert("토글 변경 권한이 없습니다. 자기가 쓴 게시물만 변경 가능합니다.");
+            return;
+        }
+
+        const newStatus = currentStatus === 1 ? 0 : 1; // 상태 반전
+        try {
+            await axios.patch(`/api/boards/${boardId}/toggle-status`, {}, {
+                headers: { Authorization: token }
+            });
+            alert(`모집 상태가 ${newStatus === 1 ? '모집 중' : '모집 마감'}으로 변경되었습니다.`);
+            fetchBoards(); // 상태 변경 후 목록 갱신
+        } catch (err) {
+            alert("모집 상태 변경에 실패했습니다.");
         }
     }
 
