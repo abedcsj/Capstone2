@@ -13,27 +13,10 @@
         <button class="btn btn-outline-secondary" onclick="location.href='/mypage'">마이페이지</button>
     </div>
 
-    <!-- 필터 및 검색 영역 -->
-    <div class="row mb-4 g-2 align-items-end">
-        <div class="col-md-4">
-            <label for="categoryFilter" class="form-label">카테고리</label>
-            <select id="categoryFilter" class="form-select">
-                <option value="">전체 보기</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label for="boardIdInput" class="form-label">게시글 ID (숫자)</label>
-            <input type="number" id="boardIdInput" class="form-control" placeholder="예: 5">
-        </div>
-        <div class="col-md-4">
-            <button class="btn btn-primary w-100" onclick="searchBoards()">검색</button>
-        </div>
-    </div>
-
-    <!-- 게시글 목록 -->
     <div id="board-list" class="list-group mb-4"></div>
 
-    <!-- 글 작성 버튼 -->
+    <div id="pagination" class="text-center mb-4"></div>
+
     <div class="text-end">
         <button class="btn btn-primary" onclick="location.href='/board/create'">게시글 작성</button>
     </div>
@@ -41,157 +24,85 @@
 
 <script>
     const token = localStorage.getItem('accessToken');
-    let allBoards = [];
+    const pageSize = 10; // 10개씩 고정
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadCategoryOptions();
-        fetchBoards();
-    });
-
-    async function loadCategoryOptions() {
-        try {
-            const res = await axios.get('/api/category', {
-                headers: { Authorization: token }
-            });
-            const select = document.getElementById('categoryFilter');
-            res.data.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.text = convertCategoryToKorean(category);
-                select.appendChild(option);
-            });
-        } catch (err) {
-            console.error('카테고리 로드 실패:', err);
-        }
-    }
+    let boardList = [];  // 전체 게시글 리스트
+    let currentPage = 0;
+    let totalPages = 0;
 
     async function fetchBoards() {
         try {
-            const res = await axios.get('/api/boards', {
-                headers: { Authorization: token }
+            const res = await axios.get('/api/boards?page=0&size=1000', { // 여기 size 크게 지정
+                headers: {
+                    'Authorization': token
+                }
             });
-            allBoards = res.data.reverse(); // 최신순
-            renderBoardList(allBoards);
-        } catch (err) {
+            boardList = res.data;
+            totalPages = Math.ceil(boardList.length / pageSize);
+            renderBoards();
+            renderPagination();
+        } catch (error) {
+            console.error(error);
             alert('게시글 목록을 불러오지 못했습니다.');
         }
     }
 
-    function searchBoards() {
-        const category = document.getElementById('categoryFilter').value;
-        const boardId = document.getElementById('boardIdInput').value;
-
-        if (boardId) {
-            const matched = allBoards.find(b => b.id == boardId);
-            if (matched) {
-                renderBoardList([matched]);
-            } else {
-                alert('해당 ID의 게시글을 찾을 수 없습니다.');
-            }
-        } else if (category) {
-            const filtered = allBoards.filter(b => b.category === category);
-            renderBoardList(filtered);
-        } else {
-            renderBoardList(allBoards);
-        }
-    }
-
-    function renderBoardList(boardList) {
+    function renderBoards() {
         const container = document.getElementById('board-list');
         container.innerHTML = '';
 
-        const total = boardList.length;
+        const start = currentPage * pageSize;
+        const end = start + pageSize;
+        const pageItems = boardList.slice(start, end);
 
-        boardList.forEach((board, idx) => {
-            const number = total - idx;
+        pageItems.forEach(board => {
             const div = document.createElement('div');
             div.className = 'list-group-item';
             div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <div onclick="location.href='/board/${board.id}'" style="cursor:pointer; flex-grow: 1;">
-                    <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
-                    <h5>(${number}) ${board.title}</h5>
-                    <p class="mb-1">${board.description}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div onclick="location.href='/board/${board.id}'" style="cursor:pointer;">
+                        <h5 class="mb-1">${board.title}</h5>
+                        <p class="mb-1 text-muted">${board.description}</p>
+                    </div>
+                    <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
                 </div>
-                <div class="ms-3">
-                    <button class="btn btn-sm btn-success me-2" onclick="event.stopPropagation(); apply(${board.id})">참여 신청</button>
-                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteBoard(${board.id})">삭제</button>
-                    <button class="btn btn-sm ${board.is_closed === 1 ? 'btn-secondary' : 'btn-success'}"
-                            onclick="event.stopPropagation(); toggleRecruitment(${board.id}, ${board.is_closed})">
-                        ${board.is_closed === 1 ? '모집 마감' : '모집 중'}
-                    </button>
-                </div>
-            </div>
             `;
             container.appendChild(div);
         });
     }
 
+    function renderPagination() {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        for (let i = 0; i < totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} mx-1`;
+            btn.innerText = i + 1;
+            btn.onclick = () => {
+                currentPage = i;
+                renderBoards();
+                renderPagination();
+            };
+            paginationContainer.appendChild(btn);
+        }
+    }
+
     async function apply(boardId) {
         try {
             await axios.post(`/api/board-participation/request?boardId=${boardId}`, null, {
-                headers: { Authorization: token }
+                headers: {
+                    'Authorization': token
+                }
             });
             alert('참여 신청이 완료되었습니다.');
         } catch (err) {
+            console.error(err);
             alert('참여 신청 실패');
         }
     }
 
-    async function deleteBoard(boardId) {
-        if (!confirm("정말로 삭제하시겠습니까?")) return;
-
-        try {
-            await axios.delete(`/api/boards/${boardId}`, {
-                headers: { Authorization: token }
-            });
-            alert("게시글이 삭제되었습니다.");
-            fetchBoards(); // 삭제 후 목록 갱신
-        } catch (err) {
-            alert("삭제 권한이 없습니다.");
-        }
-    }
-
-    async function toggleRecruitment(boardId, currentStatus) {
-        // 사용자가 작성한 게시물인지 확인
-        const res = await axios.get(`/api/boards/${boardId}`, {
-            headers: { Authorization: token }
-        });
-
-        if (res.data.user_id !== parseInt(localStorage.getItem('userId'))) {
-            alert("토글 변경 권한이 없습니다. 자기가 쓴 게시물만 변경 가능합니다.");
-            return;
-        }
-
-        const newStatus = currentStatus === 1 ? 0 : 1; // 상태 반전
-        try {
-            await axios.patch(`/api/boards/${boardId}/toggle-status`, {}, {
-                headers: { Authorization: token }
-            });
-            alert(`모집 상태가 ${newStatus === 1 ? '모집 중' : '모집 마감'}으로 변경되었습니다.`);
-            fetchBoards(); // 상태 변경 후 목록 갱신
-        } catch (err) {
-            alert("모집 상태 변경에 실패했습니다.");
-        }
-    }
-
-    function convertCategoryToKorean(category) {
-        const dict = {
-            EDUCATION: "교육 & 학습",
-            IT: "IT & 개발",
-            DESIGN: "디자인 & 예술",
-            TRANSLATION: "번역 & 작문",
-            LIFESTYLE: "생활 & 취미",
-            ENGINEERING: "공학 & 과학",
-            BUSINESS: "비즈니스 & 금융",
-            VOLUNTEERING: "사회봉사 & 공익",
-            HEALTHCARE: "건강 & 의료",
-            SPORTS: "스포츠 & 트레이닝",
-            COOKING: "요리 & 베이킹",
-            ETC: "기타 맞춤형 재능"
-        };
-        return dict[category] || category;
-    }
+    document.addEventListener('DOMContentLoaded', fetchBoards);
 </script>
 </body>
 </html>

@@ -7,6 +7,9 @@ import com.example.capstone2.repository.BoardRepository;
 import com.example.capstone2.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +44,9 @@ public class BoardService {
     public void updateBoard(Long userId, Long boardId, BoardDto dto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
-
         if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("수정 권한 없음");
         }
-
         board.setTitle(dto.getTitle());
         board.setDescription(dto.getDescription());
         board.setCreditPrice(dto.getCreditPrice());
