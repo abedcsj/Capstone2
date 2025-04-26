@@ -41,11 +41,9 @@ public class BoardService {
     public void updateBoard(Long userId, Long boardId, BoardDto dto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
-
         if (!board.getOwner().getId().equals(userId)) {
             throw new AccessDeniedException("수정 권한 없음");
         }
-
         board.setTitle(dto.getTitle());
         board.setDescription(dto.getDescription());
         board.setCreditPrice(dto.getCreditPrice());
