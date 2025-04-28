@@ -75,7 +75,6 @@
         }
         .btn-success:hover {
             background-color: #5AAE5D;
-
         }
     </style>
 </head>
@@ -120,7 +119,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
-    const pageSize = 10; // 10개씩 고정
+    const pageSize = 10;
     let boardList = [];
     let allBoards = [];
     let currentPage = 0;
@@ -129,17 +128,13 @@
     async function fetchBoards() {
         try {
             const res = await axios.get('/api/boards?page=0&size=1000', {
-                headers: {
-                    'Authorization': token
-                }
+                headers: { 'Authorization': token }
             });
-
             boardList = res.data;
             allBoards = res.data;
             totalPages = Math.ceil(boardList.length / pageSize);
             renderBoards();
             renderPagination();
-
         } catch (error) {
             console.error(error);
             alert('게시글 목록을 불러오지 못했습니다.');
@@ -182,11 +177,12 @@
                         <p class="mb-1">${board.description}</p>
                     </div>
                     <div class="d-flex align-items-center">
-                        <label class="switch me-3">
-                            <input type="checkbox" ${board.closed === false ? 'checked' : ''} disabled>
+                        <label class="switch me-2">
+                            <input type="checkbox" ${board.closed === false ? 'checked' : ''} onchange="toggleStatus(${board.id}, this)">
                             <span class="slider"></span>
                         </label>
-                        <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
+                        <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
                     </div>
                 </div>
             `;
@@ -214,16 +210,46 @@
     async function apply(boardId) {
         try {
             await axios.post(`/api/board-participation/request?boardId=${boardId}`, null, {
-                headers: {
-                    'Authorization': token
-                }
+                headers: { 'Authorization': token }
             });
             alert('🎉 참여 신청이 완료되었습니다!');
         } catch (err) {
-
             console.error(err);
             alert('참여 신청 실패');
+        }
+    }
 
+    async function toggleStatus(boardId, checkbox) {
+        if (!confirm('모집 상태를 변경하시겠습니까?')) {
+            checkbox.checked = !checkbox.checked;
+            return;
+        }
+        try {
+            await axios.patch(`/api/boards/${boardId}/toggle-status`, null, {
+                headers: { 'Authorization': token }
+            });
+            alert('📌 모집 상태가 변경되었습니다!');
+            fetchBoards();
+        } catch (error) {
+            console.error(error);
+            alert('⚠️ 권한이 없습니다. 작성자만 모집 상태를 변경할 수 있습니다.');
+            checkbox.checked = !checkbox.checked;
+        }
+    }
+
+    async function deleteBoard(boardId) {
+        if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) {
+            return;
+        }
+        try {
+            await axios.delete(`/api/boards/${boardId}`, {
+                headers: { 'Authorization': token }
+            });
+            alert('📌 게시글이 삭제되었습니다!');
+            fetchBoards();
+        } catch (error) {
+            console.error(error);
+            alert('⚠️ 권한이 없습니다. 작성자만 게시글을 삭제할 수 있습니다.');
         }
     }
 
@@ -232,7 +258,6 @@
         const boardId = document.getElementById('boardIdInput').value;
 
         if (boardId) {
-            // 게시글 ID 검색은 서버에서 조회
             try {
                 const res = await axios.get(`/api/boards/${boardId}`, {
                     headers: { Authorization: token }
@@ -242,14 +267,11 @@
                 alert('해당 ID의 게시글을 찾을 수 없습니다.');
             }
         } else if (category) {
-            // 카테고리 필터링은 프론트에서 수행
             const filtered = allBoards.filter(board => board.category === category);
             renderBoardList(filtered);
         } else {
-            // 카테고리로 필터링
-            const url = category ? `/api/boards?category=${category}` : '/api/boards';
             try {
-                const res = await axios.get(url, {
+                const res = await axios.get('/api/boards', {
                     headers: { Authorization: token }
                 });
                 renderBoardList(res.data.reverse());
@@ -273,7 +295,10 @@
                         <h5 class="mb-1">${board.title}</h5>
                         <p class="mb-1">${board.description}</p>
                     </div>
-                    <button class="btn btn-sm btn-success" onclick="apply(${board.id})">참여 신청</button>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
+                    </div>
                 </div>
             `;
             container.appendChild(div);
