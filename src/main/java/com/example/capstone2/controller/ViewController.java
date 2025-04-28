@@ -2,6 +2,7 @@ package com.example.capstone2.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class ViewController {
@@ -35,4 +36,11 @@ public class ViewController {
         System.out.println("🔥 create 페이지 호출됨");
         return "createboard"; // templates/createboard.html
     }
+
+    @GetMapping("/board/modify/{boardId}")
+    public String modifyBoardPage(@PathVariable Long boardId) {
+        System.out.println("✏️ modify 페이지 호출됨 - boardId = " + boardId);
+        return "modifyboardpage"; // templates/modifyboardpage.html
+    }
+
 }
