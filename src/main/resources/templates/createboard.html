@@ -1,68 +1,136 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 작성</title>
+    <title>Time Bank | 게시글 작성</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #A7D7A3; /* 부드러운 녹색 계열 배경 */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .board-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .board-card h2 {
+            font-weight: 700;
+            color: #3E7C4A;
+            margin-bottom: 1.5rem;
+        }
+        .form-floating > .form-control, .form-select {
+            border-radius: 15px;
+            background-color: #F6FFF6;
+            border: 1px solid #D0E8D0;
+            font-size: 0.95rem;
+        }
+        .form-check-input {
+            border-radius: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #82C784;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #6DB96E;
+        }
+        .btn-secondary {
+            background-color: #eeeeee;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background-color: #dddddd;
+        }
+        .alert {
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-align: left;
+            color: #3E7C4A;
+        }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="card shadow-sm mx-auto" style="max-width: 700px;">
-        <div class="card-body">
-            <h2 class="card-title text-center mb-4">게시글 작성</h2>
 
-            <form id="board-form">
-                <div class="mb-3">
-                    <label for="title" class="form-label">제목</label>
-                    <input type="text" class="form-control" id="title" placeholder="게시글 제목 입력" required>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">설명</label>
-                    <textarea class="form-control" id="description" rows="4" placeholder="내용 입력" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">카테고리</label>
-                    <select class="form-select" id="category" required>
-                        <option value="">선택하세요</option>
-                        <option value="EDUCATION">교육 & 학습</option>
-                        <option value="IT">IT & 개발</option>
-                        <option value="DESIGN">디자인 & 예술</option>
-                        <option value="TRANSLATION">번역 & 작문</option>
-                        <option value="LIFESTYLE">생활 & 취미</option>
-                        <option value="ENGINEERING">공학 & 과학</option>
-                        <option value="BUSINESS">비즈니스 & 금융</option>
-                        <option value="VOLUNTEERING">사회봉사 & 공익</option>
-                        <option value="HEALTHCARE">건강 & 의료</option>
-                        <option value="SPORTS">스포츠 & 트레이닝</option>
-                        <option value="COOKING">요리 & 베이킹</option>
-                        <option value="ETC">기타 맞춤형 재능</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="credit_price" class="form-label">크레딧 가격</label>
-                    <input type="number" class="form-control" id="credit_price" placeholder="예: 5" min="0" required>
-                </div>
+<body>
 
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="is_closed">
-                    <label class="form-check-label" for="is_closed">모집 마감</label>
-                </div>
+<div class="board-card">
+    <h2>게시글 작성</h2>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="button" class="btn btn-secondary" onclick="goBack()">뒤로가기</button>
-                    <button type="submit" class="btn btn-primary">작성</button>
-                </div>
-            </form>
-
-            <div id="message" class="mt-3"></div>
+    <form id="board-form">
+        <div class="mb-3 text-start">
+            <label for="title">제목</label>
+            <input type="text" class="form-control" id="title" placeholder="게시글 제목 입력" required>
         </div>
-    </div>
+
+        <div class="mb-3 text-start">
+            <label for="description">설명</label>
+            <textarea class="form-control" id="description" rows="4" placeholder="내용 입력" required></textarea>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="category">카테고리</label>
+            <select class="form-select" id="category" required>
+                <option value="">카테고리 선택</option>
+                <option value="EDUCATION">교육 & 학습</option>
+                <option value="IT">IT & 개발</option>
+                <option value="DESIGN">디자인 & 예술</option>
+                <option value="TRANSLATION">번역 & 작문</option>
+                <option value="LIFESTYLE">생활 & 취미</option>
+                <option value="ENGINEERING">공학 & 과학</option>
+                <option value="BUSINESS">비즈니스 & 금융</option>
+                <option value="VOLUNTEERING">사회봉사 & 공익</option>
+                <option value="HEALTHCARE">건강 & 의료</option>
+                <option value="SPORTS">스포츠 & 트레이닝</option>
+                <option value="COOKING">요리 & 베이킹</option>
+                <option value="ETC">기타 맞춤형 재능</option>
+            </select>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="credit_price">크레딧 가격</label>
+            <input type="number" class="form-control" id="credit_price" placeholder="예: 5" min="0" required>
+        </div>
+
+        <div class="form-check mb-4 text-start">
+            <input class="form-check-input" type="checkbox" id="is_closed">
+            <label class="form-check-label" for="is_closed">모집 마감</label>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="button" class="btn btn-secondary" onclick="goBack()">뒤로가기</button>
+            <button type="submit" class="btn btn-primary">작성하기</button>
+        </div>
+    </form>
+
+    <div id="message" class="mt-3"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
-
 
     document.getElementById('board-form').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -80,17 +148,16 @@
             const res = await axios.post('/api/boards', boardData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization': `${token}`
                     'Authorization': `${token}`
                 }
             });
 
             document.getElementById('message').innerHTML =
-                `<div class="alert alert-success">게시글이 성공적으로 등록되었습니다.</div>`;
+                `<div class="alert alert-success">🎉 게시글이 성공적으로 등록되었습니다.</div>`;
             document.getElementById('board-form').reset();
         } catch (err) {
             document.getElementById('message').innerHTML =
-                `<div class="alert alert-danger">게시글 등록에 실패했습니다.</div>`;
+                `<div class="alert alert-danger">⚠️ 게시글 등록에 실패했습니다. 다시 시도해주세요.</div>`;
         }
     });
 
@@ -98,5 +165,6 @@
         window.location.href = '/boardpage';
     }
 </script>
+
 </body>
 </html>

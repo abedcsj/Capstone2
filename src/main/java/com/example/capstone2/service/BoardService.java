@@ -73,10 +73,11 @@ public class BoardService {
         return toDto(board);
     }
 
-    public List<BoardDto> getAllBoards() {
-        return boardRepository.findAll().stream()
+    public List<BoardDto> getBoardsPaged(int page) {
+        Pageable pageable = PageRequest.of(page, 15, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return boardRepository.findAll(pageable)
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .getContent();
     }
 
     @Transactional

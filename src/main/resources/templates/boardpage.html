@@ -1,61 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시판</title>
+    <title>Time Bank | 게시판</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <style>
-        /* 토글 버튼 스타일 */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #A7D7A3;
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .board-container {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .slider {
-            position: absolute;
-            cursor: default;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
+        .board-header h2 {
+            font-weight: 700;
+            color: #3E7C4A;
         }
-
-        input:checked + .slider {
-            background-color: #4CAF50;
+        .btn-primary {
+            background-color: #82C784;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
         }
+        .btn-primary:hover {
+            background-color: #6DB96E;
+        }
+        .btn-outline-secondary {
+            border-color: #82C784;
+            color: #82C784;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #82C784;
+            color: white;
+        }
+        .list-group-item {
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            background-color: #F6FFF6;
+            border: 1px solid #D0E8D0;
+            padding: 1rem;
+            transition: box-shadow 0.3s ease;
+        }
+        .list-group-item:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .btn-success {
+            background-color: #6DB96E;
+            border: none;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+        .btn-success:hover {
+            background-color: #5AAE5D;
 
-        input:checked + .slider:before {
-            transform: translateX(22px);
         }
     </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+
+<body>
+
+<div class="board-container">
+    <div class="board-header">
         <h2>게시글 목록</h2>
         <button class="btn btn-outline-secondary" onclick="location.href='/mypage'">마이페이지</button>
     </div>
@@ -69,6 +97,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
     const pageSize = 10; // 10개씩 고정
@@ -84,10 +113,12 @@
                     'Authorization': token
                 }
             });
+
             boardList = res.data;
             totalPages = Math.ceil(boardList.length / pageSize);
             renderBoards();
             renderPagination();
+
         } catch (error) {
             console.error(error);
             alert('게시글 목록을 불러오지 못했습니다.');
@@ -148,14 +179,17 @@
                     'Authorization': token
                 }
             });
-            alert('참여 신청이 완료되었습니다.');
+            alert('🎉 참여 신청이 완료되었습니다!');
         } catch (err) {
+
             console.error(err);
             alert('참여 신청 실패');
+
         }
     }
 
     document.addEventListener('DOMContentLoaded', fetchBoards);
 </script>
+
 </body>
 </html>

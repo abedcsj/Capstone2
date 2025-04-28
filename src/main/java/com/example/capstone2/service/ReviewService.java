@@ -6,12 +6,12 @@ import com.example.capstone2.repository.BoardParticipationRepository;
 import com.example.capstone2.repository.BoardRepository;
 import com.example.capstone2.repository.ReviewRepository;
 import com.example.capstone2.repository.UserRepository;
-import com.example.capstone2.security.PrincipalDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +51,6 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(review);
         return toDto(savedReview);
     }
-
     @Transactional
     public ReviewDto updateReview(Long id, ReviewDto dto, Long userId) {
         Review review = reviewRepository.findById(id)
@@ -65,7 +64,6 @@ public class ReviewService {
         review.setRating(dto.getRating());
         return toDto(review);
     }
-
     @Transactional
     public void deleteReview(Long id, Long userId) {
         Review review = reviewRepository.findById(id)

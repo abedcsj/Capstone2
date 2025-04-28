@@ -49,7 +49,6 @@ public class CommentService {
         if (!isOwner && !isParticipant) {
             throw new SecurityException("해당 게시글의 작성자 또는 참여자만 댓글을 볼 수 있습니다.");
         }
-
         return commentRepository.findByBoardId(boardId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

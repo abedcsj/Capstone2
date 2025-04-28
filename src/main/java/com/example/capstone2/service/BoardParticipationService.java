@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +42,6 @@ public class BoardParticipationService {
         if (user.getCredit() < creditAmount) {
             throw new IllegalStateException("보유 크레딧이 부족합니다.");
         }
-
         user.setCredit(user.getCredit() - creditAmount);
         userRepository.save(user);
 
@@ -57,7 +56,6 @@ public class BoardParticipationService {
 
         return toDto(participation);
     }
-
     // 📌 참가자가 환불 요청 (APPROVED → REFUNDED)
     @Transactional
     public BoardParticipationDto requestRefund(Long participationId, User user) {
@@ -91,7 +89,6 @@ public class BoardParticipationService {
 
         return toDto(participation);
     }
-
     // ✅ Entity → DTO 변환 메서드
     private BoardParticipationDto toDto(BoardParticipation p) {
         return new BoardParticipationDto(
