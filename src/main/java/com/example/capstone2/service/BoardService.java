@@ -2,6 +2,7 @@ package com.example.capstone2.service;
 
 import com.example.capstone2.domain.*;
 import com.example.capstone2.dto.BoardDto;
+import com.example.capstone2.dto.BoardParticipationDto;
 import com.example.capstone2.repository.BoardParticipationRepository;
 import com.example.capstone2.repository.BoardRepository;
 import com.example.capstone2.repository.UserRepository;
@@ -146,5 +147,36 @@ public class BoardService {
         userRepository.save(sender);
 
         boardParticipationRepository.save(participation);
+    }
+
+    public List<Long> getApprovedParticipantsUserIds(Long boardId) {
+        List<BoardParticipation> approvedParticipations =
+                boardParticipationRepository.findByBoardIdAndStatus(boardId, ParticipationStatus.APPROVED);
+
+        return approvedParticipations.stream()
+                .map(participation -> participation.getUser().getId())
+                .collect(Collectors.toList());
+    }
+
+    public List<BoardParticipationDto> getAllParticipants(Long boardId) {
+        List<BoardParticipation> participations =
+                boardParticipationRepository.findByBoardId(boardId);
+
+        return participations.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private BoardParticipationDto toDto(BoardParticipation participation) {
+        return new BoardParticipationDto(
+                participation.getId(),
+                participation.getBoard().getId(),
+                participation.getUser().getId(),
+                participation.getStatus(),
+                participation.getRequestedAt(),
+                participation.getApprovedAt(),
+                participation.getCreditAmount()
+        );
+
     }
 }

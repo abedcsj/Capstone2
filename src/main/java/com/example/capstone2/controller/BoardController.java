@@ -1,6 +1,7 @@
 package com.example.capstone2.controller;
 
 import com.example.capstone2.dto.BoardDto;
+import com.example.capstone2.dto.BoardParticipationDto;
 import com.example.capstone2.security.PrincipalDetails;
 import com.example.capstone2.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +80,21 @@ public class BoardController {
                                                       @AuthenticationPrincipal PrincipalDetails principal) {
         boardService.rejectParticipation(participationId, principal.getUser());
         return ResponseEntity.ok("참여가 거절되었습니다.");
+    }
+
+    // 특정 게시글의 승인된 참여자 userId 리스트 가져오기
+    @GetMapping("/{boardId}/participants")
+    public ResponseEntity<List<Long>> getApprovedParticipants(@PathVariable Long boardId) {
+        List<Long> participants = boardService.getApprovedParticipantsUserIds(boardId);
+        return ResponseEntity.ok(participants);
+    }
+
+    // 또는 전체 참여 명단 (DTO로 자세히)
+    // 상태 구분 없이 전체 가져오기
+    @GetMapping("/{boardId}/all-participants")
+    public ResponseEntity<List<BoardParticipationDto>> getAllParticipants(@PathVariable Long boardId) {
+        List<BoardParticipationDto> participants = boardService.getAllParticipants(boardId);
+        return ResponseEntity.ok(participants);
     }
 
 }
