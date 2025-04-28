@@ -182,6 +182,7 @@
                             <span class="slider"></span>
                         </label>
                         <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
+                        <button class="btn btn-sm btn-warning me-2" onclick="moveToModify(${board.id})">수정</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
                     </div>
                 </div>
@@ -318,6 +319,10 @@
         loadCategoryOptions();
         fetchBoards();
     });
+
+    function moveToModify(boardId) {
+        location.href = `/board/modify/${boardId}`;
+    }
 </script>
 
 </body>

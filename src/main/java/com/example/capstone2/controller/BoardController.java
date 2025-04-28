@@ -81,5 +81,4 @@ public class BoardController {
         return ResponseEntity.ok("참여가 거절되었습니다.");
     }
 
-
 }
