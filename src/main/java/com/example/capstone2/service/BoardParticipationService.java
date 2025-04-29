@@ -56,7 +56,7 @@ public class BoardParticipationService {
 
         return toDto(participation);
     }
-    // 📌 참가자가 환불 요청 (APPROVED → REFUNDED)
+    // 📌 참가자가 환불 요청 (APPROVED → REFUNpDED)
     @Transactional
     public BoardParticipationDto requestRefund(Long participationId, User user) {
         BoardParticipation participation = boardParticipationRepository.findById(participationId)

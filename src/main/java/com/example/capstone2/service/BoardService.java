@@ -149,23 +149,15 @@ public class BoardService {
         boardParticipationRepository.save(participation);
     }
 
-    public List<Long> getApprovedParticipantsUserIds(Long boardId) {
+    public List<BoardParticipationDto> getApprovedParticipations(Long boardId) {
         List<BoardParticipation> approvedParticipations =
                 boardParticipationRepository.findByBoardIdAndStatus(boardId, ParticipationStatus.APPROVED);
 
         return approvedParticipations.stream()
-                .map(participation -> participation.getUser().getId())
-                .collect(Collectors.toList());
-    }
-
-    public List<BoardParticipationDto> getAllParticipants(Long boardId) {
-        List<BoardParticipation> participations =
-                boardParticipationRepository.findByBoardId(boardId);
-
-        return participations.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
 
     private BoardParticipationDto toDto(BoardParticipation participation) {
         return new BoardParticipationDto(
