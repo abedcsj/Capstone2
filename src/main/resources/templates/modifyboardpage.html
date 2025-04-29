@@ -21,7 +21,7 @@
             border-radius: 20px;
             padding: 2rem;
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .btn-primary {
@@ -42,25 +42,27 @@
         .btn-secondary:hover {
             background-color: #bbb;
         }
+        .participant-box {
+            border: 1px solid #D0E8D0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #F6FFF6;
+        }
     </style>
 </head>
-
 <body>
-
 <div class="modify-container">
     <h2 class="mb-4 text-center" style="color:#3E7C4A;">게시글 수정</h2>
-
     <form id="modify-form">
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
             <input type="text" id="title" class="form-control" required>
         </div>
-
         <div class="mb-3">
             <label for="description" class="form-label">내용</label>
             <textarea id="description" class="form-control" rows="5" required></textarea>
         </div>
-
         <div class="mb-3">
             <label for="category" class="form-label">카테고리</label>
             <select id="category" class="form-select" required>
@@ -78,19 +80,20 @@
                 <option value="ETC">기타 맞춤형 재능</option>
             </select>
         </div>
-
         <div class="mb-4">
             <label for="creditPrice" class="form-label">크레딧 가격</label>
             <input type="number" id="creditPrice" class="form-control" required min="0">
         </div>
-
-        <div class="d-grid gap-2">
+        <div class="d-grid gap-2 mb-4">
             <button type="submit" class="btn btn-primary">수정 완료</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">뒤로 가기</button>
         </div>
     </form>
+    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">참여 요청자 목록</h4>
+    <div id="participants-list"></div>
+    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">승인된 참여자 목록</h4>
+    <div id="approved-participants-list"></div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
@@ -98,9 +101,7 @@
 
     async function loadBoard() {
         try {
-            const res = await axios.get(`/api/boards/${boardId}`, {
-                headers: { Authorization: token }
-            });
+            const res = await axios.get(`/api/boards/${boardId}`, { headers: { Authorization: token } });
             const board = res.data;
             document.getElementById('title').value = board.title;
             document.getElementById('description').value = board.description;
@@ -112,37 +113,125 @@
         }
     }
 
-    document.getElementById('modify-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const data = {
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            category: document.getElementById('category').value,
-            creditPrice: parseInt(document.getElementById('creditPrice').value, 10)
-        };
-
+    async function loadParticipants() {
         try {
-            await axios.patch(`/api/boards/${boardId}`, data, {
-                headers: {
-                    Authorization: token,
-                    'Content-Type': 'application/json'
+            const res = await axios.get(`/api/boards/${boardId}/allregister`, { headers: { Authorization: token } });
+            const container = document.getElementById('participants-list');
+            container.innerHTML = '';
+            res.data.forEach(p => {
+                if (p.status === 'PENDING') {
+                    const div = document.createElement('div');
+                    div.className = 'participant-box';
+                    div.innerHTML = `
+                        <p><strong>유저 ID:</strong> ${p.userId}</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="approve(${p.id})">참여 승인</button>
+                            <button class="btn btn-danger" onclick="reject(${p.id})">참여 거절</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
                 }
             });
-            alert('📌 게시글이 수정되었습니다!');
-            location.href = '/boardpage'; // 수정 완료 후 게시판으로 이동
         } catch (err) {
             console.error(err);
-            alert('⚠️ 수정 실패. 권한이 없거나 서버 오류입니다.');
+            alert('참여자 목록을 불러오지 못했습니다.');
         }
-    });
+    }
+
+    async function loadApprovedParticipants() {
+        try {
+            const res = await axios.get(`/api/boards/${boardId}/approved-participants`, {
+                headers: { Authorization: token }
+            });
+            const container = document.getElementById('approved-participants-list');
+            container.innerHTML = '';
+            res.data.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'participant-box';
+                div.innerHTML = `
+                    <p><strong>유저 ID:</strong> ${p.userId}</p>
+                    <div class="d-grid">
+                        <button class="btn btn-warning" onclick="refund(${p.id})">환불 요청</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+            alert('승인된 참여자 목록을 불러오지 못했습니다.');
+        }
+    }
+
+    async function approve(participationId) {
+        try {
+            await axios.put(`/api/boards/${participationId}/approve`, null, {
+                headers: { Authorization: token }
+            });
+            alert('✅ 참여가 승인되었습니다!');
+            loadParticipants();
+            loadApprovedParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 참여 승인 실패');
+        }
+    }
+
+    async function reject(participationId) {
+        try {
+            await axios.put(`/api/boards/${participationId}/reject`, null, {
+                headers: { Authorization: token }
+            });
+            alert('🚫 참여가 거절되었습니다.');
+            loadParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 참여 거절 실패');
+        }
+    }
+
+    async function refund(participationId) {
+        try {
+            await axios.put(`/api/board-participation/${participationId}/refund`, null, {
+                headers: { Authorization: token }
+            });
+            alert('💰 환불 요청 완료!');
+            loadApprovedParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 환불 요청 실패');
+        }
+    }
 
     function goBack() {
         location.href = '/boardpage';
     }
 
-    document.addEventListener('DOMContentLoaded', loadBoard);
-</script>
+    document.getElementById('modify-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const body = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                creditPrice: parseInt(document.getElementById('creditPrice').value),
+                closed: false
+            };
+            await axios.patch(`/api/boards/${boardId}`, body, {
+                headers: { Authorization: token }
+            });
+            alert('✅ 게시글이 수정되었습니다.');
+            goBack();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 게시글 수정 실패');
+        }
+    });
 
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBoard();
+        loadParticipants();
+        loadApprovedParticipants();
+    });
+</script>
 </body>
 </html>

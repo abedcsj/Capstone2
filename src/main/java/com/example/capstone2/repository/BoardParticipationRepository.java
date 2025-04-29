@@ -18,4 +18,5 @@ public interface BoardParticipationRepository extends JpaRepository<BoardPartici
 
     // 특정 boardId에 대해 APPROVED된 참여 리스트만 조회
     List<BoardParticipation> findByBoardIdAndStatus(Long boardId, ParticipationStatus status);
+
 }
