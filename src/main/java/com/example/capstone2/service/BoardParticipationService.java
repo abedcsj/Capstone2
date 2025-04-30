@@ -10,6 +10,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -100,5 +102,14 @@ public class BoardParticipationService {
                 p.getApprovedAt(),
                 p.getCreditAmount()
         );
+    }
+
+    // boardParticipation 테이블에서 board_Id 컬럼의 값이 같은 행 가져오는 함수
+    public List<BoardParticipationDto> getAllRegisterParticipations(Long boardId) {
+        List<BoardParticipation> participations = boardParticipationRepository.findByBoardId(boardId);
+
+        return participations.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 }

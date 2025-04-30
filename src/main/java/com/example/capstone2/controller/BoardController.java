@@ -1,8 +1,10 @@
 package com.example.capstone2.controller;
 
+import com.example.capstone2.domain.Board;
 import com.example.capstone2.dto.BoardDto;
 import com.example.capstone2.dto.BoardParticipationDto;
 import com.example.capstone2.security.PrincipalDetails;
+import com.example.capstone2.service.BoardParticipationService;
 import com.example.capstone2.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardParticipationService boardParticipationService;
 
 
     // 게시글 작성
@@ -80,6 +83,13 @@ public class BoardController {
                                                       @AuthenticationPrincipal PrincipalDetails principal) {
         boardService.rejectParticipation(participationId, principal.getUser());
         return ResponseEntity.ok("참여가 거절되었습니다.");
+    }
+
+    // board_id(몇번째 게시물인지 게시물 번호)를 입력하면 -> 그 게시물에 참여 신청한 사람들의 리스트 가져오기
+    @GetMapping("/{boardId}/allregister")
+    public ResponseEntity<List<BoardParticipationDto>> getAllregisterParticipations(@PathVariable Long boardId) {
+        List<BoardParticipationDto> participants = boardParticipationService.getAllRegisterParticipations(boardId);
+        return ResponseEntity.ok(participants);
     }
 
 
