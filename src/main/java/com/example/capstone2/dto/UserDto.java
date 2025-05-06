@@ -16,13 +16,15 @@ public class UserDto {
     private String email;
     private String password;
     private Role role;
+    private int credit;
 
 
-    public UserDto(Long id, String name, String email, Role role) {
+    public UserDto(Long id, String name, String email, Role role, int credit) {
         this.id = id;
         this.username = name;
         this.email = email;
         this.role = role;
+        this.credit = credit;
     }
     @Getter
     @Setter

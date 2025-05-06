@@ -84,14 +84,14 @@ public class UserService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.getCredit());
     }
 
     public List<UserDto> getAllUsers() {
         validateIsAdmin();
 
         return userRepository.findAll().stream()
-                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole()))
+                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.getCredit()))
                 .collect(Collectors.toList());
     }
 

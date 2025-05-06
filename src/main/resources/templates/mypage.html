@@ -90,6 +90,7 @@
         <p><strong>아이디:</strong> <span id="info-username"></span></p>
         <p><strong>이메일:</strong> <span id="info-email"></span></p>
         <p><strong>권한:</strong> <span id="info-role"></span></p>
+        <p><strong>크레딧:</strong> <span id="info-credit"></span>원</p> <!-- 🔥 추가 -->
     </div>
 
     <!-- 정보 수정 폼 -->
@@ -136,10 +137,11 @@
                     'Authorization': `${token}`
                 }
             });
-            const { username, email, role } = res.data;
+            const { username, email, role, credit } = res.data; // 🔥 credit 추가
             document.getElementById('info-username').textContent = username;
             document.getElementById('info-email').textContent = email;
             document.getElementById('info-role').textContent = role;
+            document.getElementById('info-credit').textContent = credit; // 🔥 추가
         } catch (err) {
             document.getElementById('message').innerHTML =
                 `<div class="alert alert-danger">내 정보를 불러오지 못했습니다.</div>`;
