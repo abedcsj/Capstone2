@@ -72,8 +72,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
+        if (!accessToken || accessToken === 'undefined') {
             alert("로그인이 필요합니다.");
+            localStorage.clear(); // 혹시나 잘못된 토큰 남아있는 경우 제거
             window.location.href = "/login";
         }
     </script>
