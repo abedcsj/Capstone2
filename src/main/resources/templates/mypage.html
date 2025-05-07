@@ -72,8 +72,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
+        if (!accessToken || accessToken === 'undefined') {
             alert("로그인이 필요합니다.");
+            localStorage.clear(); // 혹시나 잘못된 토큰 남아있는 경우 제거
             window.location.href = "/login";
         }
     </script>
@@ -89,21 +90,26 @@
         <p><strong>아이디:</strong> <span id="info-username"></span></p>
         <p><strong>이메일:</strong> <span id="info-email"></span></p>
         <p><strong>권한:</strong> <span id="info-role"></span></p>
+        <p><strong>크레딧:</strong> <span id="info-credit"></span>원</p> <!-- 🔥 추가 -->
     </div>
 
     <!-- 정보 수정 폼 -->
     <form id="update-form" class="mb-4">
-        <div class="mb-3">
-            <label for="new-email" class="form-label">새 이메일</label>
-            <input type="email" class="form-control" id="new-email" placeholder="변경할 이메일 입력">
-        </div>
-        <div class="mb-3">
-            <label for="new-password" class="form-label">새 비밀번호</label>
-            <input type="password" class="form-control" id="new-password" placeholder="변경할 비밀번호 입력">
-        </div>
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">정보 수정</button>
-        </div>
+    <div class="mb-3">
+        <label for="new-username" class="form-label">새 아이디</label>
+        <input type="text" class="form-control" id="new-username" placeholder="변경할 아이디 입력">
+    </div>
+    <div class="mb-3">
+        <label for="new-email" class="form-label">새 이메일</label>
+        <input type="email" class="form-control" id="new-email" placeholder="변경할 이메일 입력">
+    </div>
+    <div class="mb-3">
+        <label for="new-password" class="form-label">새 비밀번호</label>
+        <input type="password" class="form-control" id="new-password" placeholder="변경할 비밀번호 입력">
+    </div>
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">정보 수정</button>
+    </div>
     </form>
 
     <!-- 회원 탈퇴 -->
@@ -131,10 +137,11 @@
                     'Authorization': `${token}`
                 }
             });
-            const { username, email, role } = res.data;
+            const { username, email, role, credit } = res.data; // 🔥 credit 추가
             document.getElementById('info-username').textContent = username;
             document.getElementById('info-email').textContent = email;
             document.getElementById('info-role').textContent = role;
+            document.getElementById('info-credit').textContent = credit; // 🔥 추가
         } catch (err) {
             document.getElementById('message').innerHTML =
                 `<div class="alert alert-danger">내 정보를 불러오지 못했습니다.</div>`;
@@ -145,13 +152,14 @@
     document.getElementById('update-form').addEventListener('submit', async function (e) {
         e.preventDefault();
         const updatedData = {
+            username: document.getElementById('new-username').value,
             email: document.getElementById('new-email').value,
             password: document.getElementById('new-password').value
         };
         try {
             await axios.patch('/api/users', updatedData, {
                 headers: {
-                    'Authorization': accessToken,
+                    'Authorization': token,
                     'Content-Type': 'application/json'
                 }
             });
