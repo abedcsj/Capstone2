@@ -170,27 +170,26 @@
             const div = document.createElement('div');
             div.className = 'list-group-item';
             div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div onclick="location.href='/board/${board.id}'" style="cursor:pointer;">
-                        <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
-                        <h5 class="mb-1">${board.title}</h5>
-                        <p class="mb-1">${board.description}</p>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <label class="switch me-2">
-                            <input type="checkbox" ${board.closed === false ? 'checked' : ''} onchange="toggleStatus(${board.id}, this)">
-                            <span class="slider"></span>
-                        </label>
-                        <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
-                        <button class="btn btn-sm btn-warning me-2" onclick="moveToModify(${board.id})">수정</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
-                    </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="clickable-area" data-id="${board.id}" style="flex: 1; cursor: pointer;">
+                    <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
+                    <h5 class="mb-1">${board.title}</h5>
+                    <p class="mb-1">${board.description}</p>
                 </div>
-            `;
+                <div class="d-flex align-items-center ms-3">
+                    <label class="switch me-2">
+                        <input type="checkbox" ${board.closed === false ? 'checked' : ''} onchange="toggleStatus(${board.id}, this)">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
+                    <button class="btn btn-sm btn-warning me-2" onclick="moveToModify(${board.id})">수정</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
+                </div>
+            </div>
+        `;
             container.appendChild(div);
         });
     }
-
     function renderPagination() {
         const paginationContainer = document.getElementById('pagination');
         paginationContainer.innerHTML = '';
@@ -318,6 +317,13 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadCategoryOptions();
         fetchBoards();
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('.clickable-area');
+            if (target) {
+                const id = target.getAttribute('data-id');
+                location.href = `/board/show/${id}`;
+            }
+        });
     });
 
     function moveToModify(boardId) {

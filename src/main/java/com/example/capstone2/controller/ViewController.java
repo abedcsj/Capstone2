@@ -43,4 +43,8 @@ public class ViewController {
         return "modifyboardpage"; // templates/modifyboardpage.html
     }
 
+    @GetMapping("/board/show/{id}")
+    public String showBoardPage(@PathVariable Long id) {
+        return "boardshow"; // boardshow.html
+    }
 }
