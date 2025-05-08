@@ -57,6 +57,7 @@ public class SecurityConfig {
                                         "/login",
                                         "/register",
                                         "/createboard",
+                                        "/board/show/**",
                                         "/boardpage",
                                         "/board/modify/**",
                                         "/mypage",

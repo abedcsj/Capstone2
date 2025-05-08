@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 보기 | Time Bank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #A7D7A3;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .view-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .participant-box {
+            border: 1px solid #D0E8D0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #F6FFF6;
+        }
+        .label-title {
+            font-weight: bold;
+            color: #3E7C4A;
+        }
+        .content-block {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="view-container">
+    <h2 class="mb-4 text-center" style="color:#3E7C4A;">게시글 상세</h2>
+
+    <!-- 게시글 정보 (읽기 전용) -->
+    <div class="content-block">
+        <div class="label-title">제목</div>
+        <p id="title" class="form-control-plaintext"></p>
+    </div>
+    <div class="content-block">
+        <div class="label-title">내용</div>
+        <p id="description" class="form-control-plaintext"></p>
+    </div>
+    <div class="content-block">
+        <div class="label-title">카테고리</div>
+        <p id="category" class="form-control-plaintext"></p>
+    </div>
+    <div class="content-block">
+        <div class="label-title">크레딧 가격</div>
+        <p id="creditPrice" class="form-control-plaintext"></p>
+    </div>
+    <div class="d-grid gap-2 mb-4">
+        <button type="button" class="btn btn-secondary" onclick="location.href='/boardpage'">뒤로 가기</button>
+    </div>
+
+    <!-- 참여자 목록 -->
+    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">참여 요청자 목록</h4>
+    <div id="participants-list"></div>
+
+    <!-- 승인된 참여자 목록 -->
+    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">승인된 참여자 목록</h4>
+    <div id="approved-participants-list"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const token = localStorage.getItem('accessToken');
+    const boardId = location.pathname.split('/').pop();
+
+    async function loadBoard() {
+        try {
+            const res = await axios.get(`/api/boards/${boardId}`, { headers: { Authorization: token } });
+            const board = res.data;
+            document.getElementById('title').innerText = board.title;
+            document.getElementById('description').innerText = board.description;
+            document.getElementById('category').innerText = convertCategory(board.category);
+            document.getElementById('creditPrice').innerText = board.creditPrice + " 크레딧";
+        } catch (err) {
+            console.error(err);
+            alert('게시글 정보를 불러오지 못했습니다.');
+        }
+    }
+
+    async function loadParticipants() {
+        try {
+            const res = await axios.get(`/api/boards/${boardId}/allregister`, { headers: { Authorization: token } });
+            const container = document.getElementById('participants-list');
+            container.innerHTML = '';
+            res.data.forEach(p => {
+                if (p.status === 'PENDING') {
+                    const div = document.createElement('div');
+                    div.className = 'participant-box';
+                    div.innerHTML = `<p><strong>유저 ID:</strong> ${p.userId}</p>`;
+                    container.appendChild(div);
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            alert('참여자 목록을 불러오지 못했습니다.');
+        }
+    }
+
+    async function loadApprovedParticipants() {
+        try {
+            const res = await axios.get(`/api/boards/${boardId}/approved-participants`, {
+                headers: { Authorization: token }
+            });
+            const container = document.getElementById('approved-participants-list');
+            container.innerHTML = '';
+            res.data.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'participant-box';
+                div.innerHTML = `<p><strong>유저 ID:</strong> ${p.userId}</p>`;
+                container.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+            alert('승인된 참여자 목록을 불러오지 못했습니다.');
+        }
+    }
+
+    function convertCategory(category) {
+        const map = {
+            EDUCATION: "교육 & 학습",
+            IT: "IT & 개발",
+            DESIGN: "디자인 & 예술",
+            TRANSLATION: "번역 & 작문",
+            LIFESTYLE: "생활 & 취미",
+            ENGINEERING: "공학 & 과학",
+            BUSINESS: "비즈니스 & 금융",
+            VOLUNTEERING: "사회봉사 & 공익",
+            HEALTHCARE: "건강 & 의료",
+            SPORTS: "스포츠 & 트레이닝",
+            COOKING: "요리 & 베이킹",
+            ETC: "기타 맞춤형 재능"
+        };
+        return map[category] || category;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBoard();
+        loadParticipants();
+        loadApprovedParticipants();
+    });
+</script>
+</body>
+</html>
