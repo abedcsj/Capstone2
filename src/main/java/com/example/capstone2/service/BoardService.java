@@ -67,12 +67,21 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    public BoardDto getBoardById(Long boardId) {
+    public List<BoardDto> searchBoardsByTitle(String keyword) {
+        List<Board> boards = boardRepository.findByTitleContainingIgnoreCase(keyword);
+        return boards.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void likeBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-        return toDto(board);
+        board.increaseLikeCount(); // 좋아요 1 증가
     }
+
 
     public List<BoardDto> getBoardsPaged(int page) {
         Pageable pageable = PageRequest.of(page, 15, Sort.by(Sort.Direction.DESC, "createdAt"));

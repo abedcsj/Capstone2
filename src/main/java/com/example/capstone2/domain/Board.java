@@ -60,4 +60,9 @@ public class Board {
     private void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
 }
