@@ -101,11 +101,13 @@ public class BoardController {
     }
 
     //좋아요 추가 기능
-    @PostMapping("/boards/{id}/like")
-    public ResponseEntity<Void> likeBoard(@PathVariable Long id) {
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> likeBoard(@PathVariable Long id) {
         boardService.likeBoard(id);
         return ResponseEntity.ok().build();
     }
+
+
 
 
 
