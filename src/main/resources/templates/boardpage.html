@@ -1,3 +1,4 @@
+<!-- ✅ HTML 본문 내부 수정: renderBoards(), renderBoardList(), 좋아요 핸들러 추가 포함 -->
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -170,26 +171,30 @@
             const div = document.createElement('div');
             div.className = 'list-group-item';
             div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="clickable-area" data-id="${board.id}" style="flex: 1; cursor: pointer;">
-                    <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
-                    <h5 class="mb-1">${board.title}</h5>
-                    <p class="mb-1">${board.description}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="clickable-area" data-id="${board.id}" style="flex: 1; cursor: pointer;">
+                        <span class="badge bg-secondary mb-2">${convertCategoryToKorean(board.category)}</span>
+                        <h5 class="mb-1">${board.title}</h5>
+                        <p class="mb-1">${board.description}</p>
+                    </div>
+                    <div class="d-flex align-items-center ms-3">
+                        <label class="switch me-2">
+                            <input type="checkbox" ${board.closed === false ? 'checked' : ''} onchange="toggleStatus(${board.id}, this)">
+                            <span class="slider"></span>
+                        </label>
+                        <button class="btn btn-sm btn-outline-danger me-2" onclick="likeBoard(${board.id}, this)">
+                            ❤️ <span class="like-count">${board.likeCount}</span>
+                        </button>
+                        <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
+                        <button class="btn btn-sm btn-warning me-2" onclick="moveToModify(${board.id})">수정</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center ms-3">
-                    <label class="switch me-2">
-                        <input type="checkbox" ${board.closed === false ? 'checked' : ''} onchange="toggleStatus(${board.id}, this)">
-                        <span class="slider"></span>
-                    </label>
-                    <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
-                    <button class="btn btn-sm btn-warning me-2" onclick="moveToModify(${board.id})">수정</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
-                </div>
-            </div>
-        `;
+            `;
             container.appendChild(div);
         });
     }
+
     function renderPagination() {
         const paginationContainer = document.getElementById('pagination');
         paginationContainer.innerHTML = '';
@@ -216,6 +221,19 @@
         } catch (err) {
             console.error(err);
             alert('참여 신청 실패');
+        }
+    }
+
+    async function likeBoard(boardId, btn) {
+        try {
+            await axios.post(`/api/boards/${boardId}/like`, null, {
+                headers: { Authorization: token }
+            });
+            const countSpan = btn.querySelector('.like-count');
+            countSpan.innerText = parseInt(countSpan.innerText) + 1;
+        } catch (err) {
+            console.error(err);
+            alert('좋아요 실패');
         }
     }
 
@@ -296,6 +314,9 @@
                         <p class="mb-1">${board.description}</p>
                     </div>
                     <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-outline-danger me-2" onclick="likeBoard(${board.id}, this)">
+                            ❤️ <span class="like-count">${board.likeCount}</span>
+                        </button>
                         <button class="btn btn-sm btn-success me-2" onclick="apply(${board.id})">참여 신청</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
                     </div>
@@ -330,6 +351,5 @@
         location.href = `/board/modify/${boardId}`;
     }
 </script>
-
 </body>
 </html>
