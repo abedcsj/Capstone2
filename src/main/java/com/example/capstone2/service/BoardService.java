@@ -180,4 +180,10 @@ public class BoardService {
         );
 
     }
+
+    public BoardDto getBoardById(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        return toDto(board);
+    }
 }

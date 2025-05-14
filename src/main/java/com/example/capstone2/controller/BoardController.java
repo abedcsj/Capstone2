@@ -47,11 +47,19 @@ public class BoardController {
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
+
+
     //제목으로 게시글 조회
     @GetMapping("/boards/search")
     public ResponseEntity<List<BoardDto>> searchBoardsByTitle(@RequestParam String keyword) {
         List<BoardDto> results = boardService.searchBoardsByTitle(keyword);
         return ResponseEntity.ok(results);
+    }
+
+    // 게시글 단건 조회
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDto> getBoard(@PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.getBoardById(boardId));
     }
 
     // 전체 게시글 조회 (페이징 적용)
