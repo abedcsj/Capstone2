@@ -47,6 +47,8 @@ public class BoardController {
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
+
+
     //제목으로 게시글 조회
     @GetMapping("/boards/search")
     public ResponseEntity<List<BoardDto>> searchBoardsByTitle(@RequestParam String keyword) {
@@ -54,13 +56,22 @@ public class BoardController {
         return ResponseEntity.ok(results);
     }
 
-    // 전체 게시글 조회 (페이징 적용)
-
-    @GetMapping
-    public ResponseEntity<List<BoardDto>> getAllBoards(@RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(boardService.getBoardsPaged(page));
+    // 게시글 단건 조회
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDto> getBoard(@PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.getBoardById(boardId));
     }
 
+    // 전체 게시글 조회 (페이징 적용)
+
+//    @GetMapping
+//    public ResponseEntity<List<BoardDto>> getAllBoards(@RequestParam(defaultValue = "0") int page) {
+//        return ResponseEntity.ok(boardService.getBoardsPaged(page));
+    //    }
+    @GetMapping
+    public ResponseEntity<List<BoardDto>> getAllBoards() {
+        return ResponseEntity.ok(boardService.getAllBoards());
+    }
 
     @PatchMapping("/{boardId}/toggle-status")
     public ResponseEntity<String> toggleBoardStatus(@PathVariable Long boardId,

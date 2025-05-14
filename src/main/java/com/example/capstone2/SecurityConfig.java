@@ -63,6 +63,7 @@ public class SecurityConfig {
                                         "/mypage",
                                         "/css/**",
                                         "/js/**",
+                                        "/image/**",
                                         "/favicon.ico",
                                         "/api/users/register",
                                         "/board/create",
