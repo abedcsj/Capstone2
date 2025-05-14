@@ -64,11 +64,14 @@ public class BoardController {
 
     // 전체 게시글 조회 (페이징 적용)
 
+//    @GetMapping
+//    public ResponseEntity<List<BoardDto>> getAllBoards(@RequestParam(defaultValue = "0") int page) {
+//        return ResponseEntity.ok(boardService.getBoardsPaged(page));
+    //    }
     @GetMapping
-    public ResponseEntity<List<BoardDto>> getAllBoards(@RequestParam(defaultValue = "0") int page) {
-        return ResponseEntity.ok(boardService.getBoardsPaged(page));
+    public ResponseEntity<List<BoardDto>> getAllBoards() {
+        return ResponseEntity.ok(boardService.getAllBoards());
     }
-
 
     @PatchMapping("/{boardId}/toggle-status")
     public ResponseEntity<String> toggleBoardStatus(@PathVariable Long boardId,
