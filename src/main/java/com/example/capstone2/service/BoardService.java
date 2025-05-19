@@ -173,6 +173,7 @@ public class BoardService {
                 participation.getId(),
                 participation.getBoard().getId(),
                 participation.getUser().getId(),
+                participation.getUser().getUsername(),
                 participation.getStatus(),
                 participation.getRequestedAt(),
                 participation.getApprovedAt(),

@@ -2,113 +2,520 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 보기 | Time Bank</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeBank - 게시글 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #5CB85C;
+            --primary-dark: #4A934A;
+            --primary-light: #A7D7A3;
+            --secondary-color: #F6FFF6;
+            --text-primary: #3E7C4A;
+            --text-secondary: #666;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #A7D7A3;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--primary-light);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', sans-serif;
+            flex-direction: column;
         }
-        .view-container {
-            background: #fff;
-            border-radius: 20px;
+
+        .navbar {
+            background-color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .main-container {
+            flex: 1;
             padding: 2rem;
-            width: 100%;
-            max-width: 800px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
+
+        .content-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-danger {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff4c4c;
+        }
+
+        .btn-success {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
         .participant-box {
-            border: 1px solid #D0E8D0;
+            background-color: var(--secondary-color);
+            border: 1px solid #E0F0E0;
             border-radius: 10px;
             padding: 1rem;
             margin-bottom: 1rem;
-            background-color: #F6FFF6;
+            transition: all 0.3s ease;
         }
-        .label-title {
-            font-weight: bold;
-            color: #3E7C4A;
+
+        .participant-box:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .content-block {
             margin-bottom: 1.5rem;
+        }
+
+        .header-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 0.5rem;
+        }
+
+        .badge {
+            background-color: #E0F0E0;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .like-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: white;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            border-radius: 8px;
+            padding: 0.3rem 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .like-button:hover {
+            background-color: #fff0f0;
+        }
+
+        .like-button i {
+            font-size: 1rem;
+        }
+
+        footer {
+            background-color: white;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .loading::after {
+            content: "로딩 중...";
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .status-open {
+            background-color: #e0f7e0;
+            color: #2e7d32;
+        }
+
+        .status-closed {
+            background-color: #f5f5f5;
+            color: #757575;
+        }
+
+        /* 애니메이션 효과 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E0F0E0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-<div class="view-container">
-    <h2 class="mb-4 text-center" style="color:#3E7C4A;">게시글 상세</h2>
+<!-- 네비게이션 바 -->
+<nav class="navbar py-4 px-6 flex items-center justify-between">
+    <div class="flex items-center">
+        <a href="/" class="text-2xl font-bold text-green-600 flex items-center">
+            <i class="fas fa-clock mr-2"></i>
+            <span>TimeBank</span>
+        </a>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="/boardpage" class="btn-outline py-2 px-4 rounded-lg">
+            <i class="fas fa-list-ul mr-1"></i> 게시판
+        </a>
+        <a href="/mypage" class="btn-primary py-2 px-4 rounded-lg">
+            <i class="fas fa-user mr-1"></i> 마이페이지
+        </a>
+    </div>
+</nav>
 
-    <!-- 게시글 정보 (읽기 전용) -->
-    <div class="content-block">
-        <div class="label-title">제목</div>
-        <p id="title" class="form-control-plaintext"></p>
-    </div>
-    <div class="content-block">
-        <div class="label-title">내용</div>
-        <p id="description" class="form-control-plaintext"></p>
-    </div>
-    <div class="content-block">
-        <div class="label-title">카테고리</div>
-        <p id="category" class="form-control-plaintext"></p>
-    </div>
-    <div class="content-block">
-        <div class="label-title">크레딧 가격</div>
-        <p id="creditPrice" class="form-control-plaintext"></p>
-    </div>
-    <div class="d-grid gap-2 mb-4">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/boardpage'">뒤로 가기</button>
-    </div>
+<!-- 메인 컨텐츠 -->
+<div class="main-container">
+    <div class="content-card">
+        <div id="loading" class="loading"></div>
 
-    <!-- 참여자 목록 -->
-    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">참여 요청자 목록</h4>
-    <div id="participants-list"></div>
+        <div id="board-detail" class="hidden fade-in">
+            <!-- 헤더 영역 -->
+            <div class="flex justify-between items-start mb-6">
+                <h1 class="header-title text-2xl" id="title"></h1>
+                <div>
+                    <span class="status status-open" id="status-badge">모집중</span>
+                </div>
+            </div>
 
-    <!-- 승인된 참여자 목록 -->
-    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">승인된 참여자 목록</h4>
-    <div id="approved-participants-list"></div>
+            <!-- 기본 정보 영역 -->
+            <div class="content-block">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="badge" id="category-badge"></span>
+                        <div class="mt-2">
+                            <span class="label">작성자:</span>
+                            <span id="author" class="ml-2"></span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="label">작성일:</span>
+                            <span id="created-date" class="ml-2"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-end gap-2 mb-3">
+                            <button class="like-button" onclick="likeBoard()">
+                                <i class="fas fa-heart"></i>
+                                <span id="like-count">0</span>
+                            </button>
+                            <span class="bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium">
+                  <i class="fas fa-coins mr-1"></i>
+                  <span id="credit-price"></span> 크레딧
+                </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-gray-200">
+
+            <!-- 내용 영역 -->
+            <div class="content-block">
+                <div class="label mb-2">내용</div>
+                <div id="description" class="bg-gray-50 rounded-lg p-4 text-gray-700 min-h-[100px]"></div>
+            </div>
+
+            <!-- 버튼 영역 -->
+            <div class="flex flex-wrap gap-2 justify-end">
+                <button class="btn-secondary" onclick="goBack()">
+                    <i class="fas fa-arrow-left mr-1"></i> 목록으로
+                </button>
+                <button id="apply-button" class="btn-primary" onclick="applyToBoard()">
+                    <i class="fas fa-hand-paper mr-1"></i> 참여 신청
+                </button>
+                <button id="edit-button" class="btn-secondary hidden" onclick="editBoard()">
+                    <i class="fas fa-edit mr-1"></i> 수정
+                </button>
+                <button id="delete-button" class="btn-danger hidden" onclick="deleteBoard()">
+                    <i class="fas fa-trash mr-1"></i> 삭제
+                </button>
+            </div>
+
+            <hr class="my-6 border-gray-200">
+
+            <!-- 참여자 목록 영역 -->
+            <div id="participants-section">
+                <h2 class="section-title">
+                    <i class="fas fa-users"></i> 참여 요청자 목록
+                </h2>
+                <div id="participants-list" class="grid grid-cols-1 gap-3"></div>
+
+                <h2 class="section-title mt-6">
+                    <i class="fas fa-user-check"></i> 승인된 참여자 목록
+                </h2>
+                <div id="approved-participants-list" class="grid grid-cols-1 gap-3"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<footer class="py-4">
+    <div class="container mx-auto">
+        <p>&copy; 2025 TimeBank - 모두의 시간을 가치있게</p>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
     const boardId = location.pathname.split('/').pop();
+    let currentUserData = null;
+    let boardData = null;
+
+    // 로딩 상태 표시/숨김 함수
+    function toggleLoading(show) {
+        const loadingElement = document.getElementById('loading');
+        const detailElement = document.getElementById('board-detail');
+
+        if (show) {
+            loadingElement.classList.remove('hidden');
+            detailElement.classList.add('hidden');
+        } else {
+            loadingElement.classList.add('hidden');
+            detailElement.classList.remove('hidden');
+        }
+    }
+
+    async function checkAuth() {
+        if (!token) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = '/login';
+            return false;
+        }
+        return true;
+    }
+
+    async function getCurrentUser() {
+        try {
+            const res = await axios.get('/api/users/me', {
+                headers: { 'Authorization': token }
+            });
+            currentUserData = res.data;
+            return res.data;
+        } catch (err) {
+            console.error('사용자 정보를 가져오지 못했습니다:', err);
+            return null;
+        }
+    }
 
     async function loadBoard() {
+        toggleLoading(true);
         try {
-            const res = await axios.get(`/api/boards/${boardId}`, { headers: { Authorization: token } });
-            const board = res.data;
-            document.getElementById('title').innerText = board.title;
-            document.getElementById('description').innerText = board.description;
-            document.getElementById('category').innerText = convertCategory(board.category);
-            document.getElementById('creditPrice').innerText = board.creditPrice + " 크레딧";
+            const res = await axios.get(`/api/boards/${boardId}`, {
+                headers: { Authorization: token }
+            });
+            boardData = res.data;
+
+            // 게시글 정보 표시
+            document.getElementById('title').textContent = boardData.title;
+            document.getElementById('description').textContent = boardData.description;
+            document.getElementById('category-badge').textContent = convertCategory(boardData.category);
+            document.getElementById('credit-price').textContent = boardData.creditPrice;
+            document.getElementById('author').textContent = boardData.authorName || '알 수 없음';
+            document.getElementById('created-date').textContent = formatDate(boardData.createdAt);
+            document.getElementById('like-count').textContent = boardData.likeCount;
+
+            // 상태 배지 업데이트
+            const statusBadge = document.getElementById('status-badge');
+            if (boardData.closed) {
+                statusBadge.textContent = '모집 마감';
+                statusBadge.classList.remove('status-open');
+                statusBadge.classList.add('status-closed');
+            } else {
+                statusBadge.textContent = '모집중';
+                statusBadge.classList.remove('status-closed');
+                statusBadge.classList.add('status-open');
+            }
+
+            // 현재 사용자가 게시글 작성자인지 확인
+            const user = await getCurrentUser();
+            if (user && boardData.authorId === user.id) {
+                document.getElementById('edit-button').classList.remove('hidden');
+                document.getElementById('delete-button').classList.remove('hidden');
+                document.getElementById('apply-button').classList.add('hidden');
+            }
+
         } catch (err) {
             console.error(err);
             alert('게시글 정보를 불러오지 못했습니다.');
+        } finally {
+            toggleLoading(false);
         }
     }
 
     async function loadParticipants() {
         try {
-            const res = await axios.get(`/api/boards/${boardId}/allregister`, { headers: { Authorization: token } });
+            const res = await axios.get(`/api/boards/${boardId}/allregister`, {
+                headers: { Authorization: token }
+            });
             const container = document.getElementById('participants-list');
             container.innerHTML = '';
-            res.data.forEach(p => {
-                if (p.status === 'PENDING') {
+
+            // 로그인한 사용자 정보 가져오기
+            const user = currentUserData || await getCurrentUser();
+            const isAuthor = user && boardData && boardData.authorId === user.id;
+
+            // 요청 대기 중인 참가자만 필터링
+            const pendingParticipants = res.data.filter(p => {
+                if (typeof p.status === 'string') return p.status === 'PENDING';
+                if (typeof p.status === 'object' && p.status.name) return p.status.name === 'PENDING';
+                return false;
+            });
+
+            if (pendingParticipants.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic">요청 대기 중인 참가자가 없습니다</p>';
+                return;
+            }
+
+            pendingParticipants.forEach(p => {
                     const div = document.createElement('div');
-                    div.className = 'participant-box';
-                    div.innerHTML = `<p><strong>유저 ID:</strong> ${p.userId}</p>`;
-                    container.appendChild(div);
+                    div.className = 'participant-box flex justify-between items-center flex-wrap';
+
+                    const userInfo = document.createElement('div');
+                userInfo.className = 'flex items-center gap-3';
+
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar';
+
+                // userId가 숫자라도 문자열로 변환해서 사용
+                avatar.textContent = String(p.userId).substring(0, 1).toUpperCase();
+
+                userInfo.appendChild(avatar);
+                userInfo.innerHTML += `<p class="font-medium">${p.userId}</p>`;
+
+                div.appendChild(userInfo);
+
+                // 작성자인 경우에만 승인/거절 버튼 표시
+                if (isAuthor) {
+                    const actions = document.createElement('div');
+                    actions.className = 'card-actions';
+                    actions.innerHTML = `
+                  <button class="btn-success px-3 py-1 rounded-lg text-sm" onclick="approve(${p.id})">
+                    <i class="fas fa-check mr-1"></i> 승인
+                  </button>
+                  <button class="btn-danger px-3 py-1 rounded-lg text-sm" onclick="reject(${p.id})">
+                    <i class="fas fa-times mr-1"></i> 거절
+                  </button>
+                `;
+                    div.appendChild(actions);
                 }
+
+                container.appendChild(div);
             });
         } catch (err) {
             console.error(err);
-            alert('참여자 목록을 불러오지 못했습니다.');
+            document.getElementById('participants-list').innerHTML =
+                '<p class="text-red-500">참여자 목록을 불러오지 못했습니다.</p>';
         }
     }
 
@@ -117,22 +524,170 @@
             const res = await axios.get(`/api/boards/${boardId}/approved-participants`, {
                 headers: { Authorization: token }
             });
+
             const container = document.getElementById('approved-participants-list');
             container.innerHTML = '';
+
+            if (res.data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic">승인된 참가자가 없습니다</p>';
+                return;
+            }
+
+            // 로그인한 사용자 정보 가져오기
+            const user = currentUserData || await getCurrentUser();
+            const isAuthor = user && boardData && boardData.authorId === user.id;
+
             res.data.forEach(p => {
                 const div = document.createElement('div');
-                div.className = 'participant-box';
-                div.innerHTML = `<p><strong>유저 ID:</strong> ${p.userId}</p>`;
+                div.className = 'participant-box flex justify-between items-center flex-wrap';
+
+                const userInfo = document.createElement('div');
+                userInfo.className = 'flex items-center gap-3';
+
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar';
+                avatar.textContent = p.username?.charAt(0).toUpperCase() || '?';
+
+                const nameText = document.createElement('p');
+                nameText.className = 'font-medium';
+                nameText.textContent = p.username || '알 수 없음';
+
+                userInfo.appendChild(avatar);
+                userInfo.appendChild(nameText);
+                div.appendChild(userInfo);
+
+                // 작성자인 경우에만 환불 버튼 표시
+                if (isAuthor) {
+                    const actions = document.createElement('div');
+                    actions.className = 'card-actions';
+                    actions.innerHTML = `
+                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm" onclick="refund(${p.id})">
+                        <i class="fas fa-undo mr-1"></i> 환불
+                    </button>
+                `;
+                    div.appendChild(actions);
+                }
+
                 container.appendChild(div);
             });
         } catch (err) {
             console.error(err);
-            alert('승인된 참여자 목록을 불러오지 못했습니다.');
+            document.getElementById('approved-participants-list').innerHTML =
+                '<p class="text-red-500">승인된 참여자 목록을 불러오지 못했습니다.</p>';
         }
     }
 
+    async function approve(participationId) {
+        if (!await checkAuth()) return;
+
+        try {
+            await axios.put(`/api/boards/${participationId}/approve`, null, {
+                headers: { Authorization: token }
+            });
+            alert('✅ 참여가 승인되었습니다!');
+            loadParticipants();
+            loadApprovedParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 참여 승인 실패');
+        }
+    }
+
+    async function reject(participationId) {
+        if (!await checkAuth()) return;
+
+        try {
+            await axios.put(`/api/boards/${participationId}/reject`, null, {
+                headers: { Authorization: token }
+            });
+            alert('🚫 참여가 거절되었습니다.');
+            loadParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 참여 거절 실패');
+        }
+    }
+
+    async function refund(participationId) {
+        if (!await checkAuth()) return;
+
+        try {
+            await axios.put(`/api/board-participation/${participationId}/refund`, null, {
+                headers: { Authorization: token }
+            });
+            alert('💰 환불 요청 완료!');
+            loadApprovedParticipants();
+        } catch (err) {
+            console.error(err);
+            alert('⚠️ 환불 요청 실패');
+        }
+    }
+
+    async function likeBoard() {
+        if (!await checkAuth()) return;
+
+        try {
+            await axios.post(`/api/boards/${boardId}/like`, null, {
+                headers: { Authorization: token }
+            });
+            const countElement = document.getElementById('like-count');
+            countElement.textContent = parseInt(countElement.textContent) + 1;
+
+            // 좋아요 버튼에 애니메이션 효과 추가
+            const likeButton = document.querySelector('.like-button');
+            likeButton.classList.add('bg-red-50');
+            setTimeout(() => {
+                likeButton.classList.remove('bg-red-50');
+            }, 300);
+        } catch (err) {
+            console.error(err);
+            alert('좋아요 실패');
+        }
+    }
+
+    async function applyToBoard() {
+        if (!await checkAuth()) return;
+
+        if (confirm('이 게시글에 참여 신청하시겠습니까?')) {
+            try {
+                await axios.post(`/api/board-participation/request?boardId=${boardId}`, null, {
+                    headers: { 'Authorization': token }
+                });
+                alert('🎉 참여 신청이 완료되었습니다!');
+            } catch (err) {
+                console.error(err);
+                alert('참여 신청 실패');
+            }
+        }
+    }
+
+    async function deleteBoard() {
+        if (!await checkAuth()) return;
+
+        if (confirm('정말 이 게시글을 삭제하시겠습니까?')) {
+            try {
+                await axios.delete(`/api/boards/${boardId}`, {
+                    headers: { 'Authorization': token }
+                });
+                alert('📌 게시글이 삭제되었습니다!');
+                window.location.href = '/boardpage';
+            } catch (error) {
+                console.error(error);
+                alert('⚠️ 권한이 없습니다. 작성자만 게시글을 삭제할 수 있습니다.');
+            }
+        }
+    }
+
+    function editBoard() {
+        window.location.href = `/board/modify/${boardId}`;
+    }
+
+    function goBack() {
+        window.location.href = '/boardpage';
+    }
+
     function convertCategory(category) {
-        const map = {
+        const dict = {
             EDUCATION: "교육 & 학습",
             IT: "IT & 개발",
             DESIGN: "디자인 & 예술",
@@ -144,12 +699,28 @@
             HEALTHCARE: "건강 & 의료",
             SPORTS: "스포츠 & 트레이닝",
             COOKING: "요리 & 베이킹",
-            ETC: "기타 맞춤형 재능"
+            ETC: "기타 맞춤형 재능",
+            TECHNOLOGY: "기술"
         };
-        return map[category] || category;
+        return dict[category] || category;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!await checkAuth()) return;
+
         loadBoard();
         loadParticipants();
         loadApprovedParticipants();
