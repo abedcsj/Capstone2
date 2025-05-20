@@ -868,8 +868,8 @@
             alert('게시글이 삭제되었습니다.');
             await fetchBoards(); // 목록 새로고침
         } catch (error) {
-            console.error('게시글 삭제 중 오류:', error);
-            alert('게시글 삭제 중 오류가 발생했습니다.');
+            console.error('게시글 삭제 권한 없음:', error);
+            alert('게시글 삭제 권한이 없습니다.');
         }
     }
 
