@@ -1,131 +1,177 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Time Bank | 게시글 작성</title>
+    <title>TimeBank - 게시글 작성</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #3E7C4A;
+            --primary-light: #A7D7A3;
+            --primary-lighter: #E8F5E9;
+            --accent-color: #82C784;
+            --text-dark: #333333;
+            --text-light: #F6FFF6;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #A7D7A3; /* 부드러운 녹색 계열 배경 */
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Pretendard', 'Segoe UI', sans-serif;
+            background-color: var(--primary-light);
         }
-        .board-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+
+        .timebank-input {
+            @apply border border-gray-200 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-green-500 bg-green-50;
         }
-        .board-card h2 {
-            font-weight: 700;
-            color: #3E7C4A;
-            margin-bottom: 1.5rem;
+
+        .timebank-label {
+            @apply block text-left text-green-800 font-medium mb-2;
         }
-        .form-floating > .form-control, .form-select {
-            border-radius: 15px;
-            background-color: #F6FFF6;
-            border: 1px solid #D0E8D0;
-            font-size: 0.95rem;
-        }
-        .form-check-input {
-            border-radius: 0.5rem;
-        }
+
         .btn-primary {
-            background-color: #82C784;
-            border: none;
-            border-radius: 15px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
+            @apply bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg;
         }
-        .btn-primary:hover {
-            background-color: #6DB96E;
-        }
+
         .btn-secondary {
-            background-color: #eeeeee;
-            border: none;
-            border-radius: 15px;
-            font-weight: 600;
-            color: #333;
+            @apply bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-300;
         }
-        .btn-secondary:hover {
-            background-color: #dddddd;
+
+        .card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
         }
-        .alert {
-            border-radius: 10px;
-            font-size: 0.9rem;
-            margin-top: 1rem;
+
+        .form-section {
+            @apply mb-6;
         }
-        label {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            display: block;
-            text-align: left;
-            color: #3E7C4A;
+
+        .form-header {
+            @apply text-2xl font-bold text-center text-green-800 mb-6;
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen flex items-center justify-center py-10 px-4">
+<div class="card w-full max-w-2xl p-8 animate-in">
+    <div class="flex items-center justify-center mb-8">
+        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-md">
+            <i class="fas fa-clock text-white text-xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold ml-3 text-green-800">시간 공유하기</h1>
+    </div>
 
-<div class="board-card">
-    <h2>게시글 작성</h2>
+    <p class="text-center text-gray-600 mb-8">
+        당신의 재능을 나누고 시간을 투자하여 TimeBank의 크레딧을 얻어보세요!
+    </p>
 
-    <form id="board-form">
-        <div class="mb-3 text-start">
-            <label for="title">제목</label>
-            <input type="text" class="form-control" id="title" placeholder="게시글 제목 입력" required>
+    <form id="board-form" class="space-y-6">
+        <div class="form-section">
+            <label for="title" class="timebank-label">
+                <i class="fas fa-heading mr-2 text-green-600"></i>제목
+            </label>
+            <input type="text" id="title" class="timebank-input" placeholder="도움을 주실 내용을 한 줄로 요약해주세요" required>
         </div>
 
-        <div class="mb-3 text-start">
-            <label for="description">설명</label>
-            <textarea class="form-control" id="description" rows="4" placeholder="내용 입력" required></textarea>
+        <div class="form-section">
+            <label for="description" class="timebank-label">
+                <i class="fas fa-align-left mr-2 text-green-600"></i>상세 설명
+            </label>
+            <textarea id="description" rows="5" class="timebank-input" placeholder="어떤 도움을 주실 수 있는지 자세히 설명해주세요" required></textarea>
         </div>
 
-        <div class="mb-3 text-start">
-            <label for="category">카테고리</label>
-            <select class="form-select" id="category" required>
-                <option value="">카테고리 선택</option>
-                <option value="EDUCATION">교육 & 학습</option>
-                <option value="IT">IT & 개발</option>
-                <option value="DESIGN">디자인 & 예술</option>
-                <option value="TRANSLATION">번역 & 작문</option>
-                <option value="LIFESTYLE">생활 & 취미</option>
-                <option value="ENGINEERING">공학 & 과학</option>
-                <option value="BUSINESS">비즈니스 & 금융</option>
-                <option value="VOLUNTEERING">사회봉사 & 공익</option>
-                <option value="HEALTHCARE">건강 & 의료</option>
-                <option value="SPORTS">스포츠 & 트레이닝</option>
-                <option value="COOKING">요리 & 베이킹</option>
-                <option value="ETC">기타 맞춤형 재능</option>
-            </select>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-section">
+                <label for="category" class="timebank-label">
+                    <i class="fas fa-tag mr-2 text-green-600"></i>카테고리
+                </label>
+                <select id="category" class="timebank-input" required>
+                    <option value="" disabled selected>카테고리 선택</option>
+                    <option value="EDUCATION">교육 & 학습</option>
+                    <option value="IT">IT & 개발</option>
+                    <option value="DESIGN">디자인 & 예술</option>
+                    <option value="TRANSLATION">번역 & 작문</option>
+                    <option value="LIFESTYLE">생활 & 취미</option>
+                    <option value="ENGINEERING">공학 & 과학</option>
+                    <option value="BUSINESS">비즈니스 & 금융</option>
+                    <option value="VOLUNTEERING">사회봉사 & 공익</option>
+                    <option value="HEALTHCARE">건강 & 의료</option>
+                    <option value="SPORTS">스포츠 & 트레이닝</option>
+                    <option value="COOKING">요리 & 베이킹</option>
+                    <option value="ETC">기타 맞춤형 재능</option>
+                </select>
+            </div>
+
+            <div class="form-section">
+                <label for="credit_price" class="timebank-label">
+                    <i class="fas fa-coins mr-2 text-green-600"></i>크레딧 가격
+                </label>
+                <div class="relative">
+                    <input type="number" id="credit_price" class="timebank-input pl-10" placeholder="5" min="0" required>
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500">₮</div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3 text-start">
-            <label for="credit_price">크레딧 가격</label>
-            <input type="number" class="form-control" id="credit_price" placeholder="예: 5" min="0" required>
+        <div class="flex items-center py-2">
+            <label for="is_closed" class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="is_closed" class="sr-only">
+                <div class="relative w-11 h-6 bg-gray-200 rounded-full transition-colors duration-200 ease-in-out hover:bg-gray-300">
+                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out"></div>
+                </div>
+                <span class="ml-3 text-sm text-gray-700">모집 마감하기</span>
+            </label>
+            <style>
+                input:checked + div {
+                    background-color: #4CAF50;
+                }
+                input:checked + div .dot {
+                    transform: translateX(100%);
+                }
+            </style>
         </div>
 
-        <div class="form-check mb-4 text-start">
-            <input class="form-check-input" type="checkbox" id="is_closed">
-            <label class="form-check-label" for="is_closed">모집 마감</label>
-        </div>
-
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="button" class="btn btn-secondary" onclick="goBack()">뒤로가기</button>
-            <button type="submit" class="btn btn-primary">작성하기</button>
+        <div class="pt-4">
+            <div class="border-t border-gray-200 pt-6 flex justify-between">
+                <button type="button" onclick="goBack()" class="btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>뒤로가기
+                </button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane mr-2"></i>작성완료
+                </button>
+            </div>
         </div>
     </form>
 
-    <div id="message" class="mt-3"></div>
+    <div id="message" class="mt-4"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -134,6 +180,11 @@
 
     document.getElementById('board-form').addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        const submitBtn = e.submitter;
+        const originalContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리중...';
+        submitBtn.disabled = true;
 
         const boardData = {
             title: document.getElementById('title').value,
@@ -153,11 +204,37 @@
             });
 
             document.getElementById('message').innerHTML =
-                `<div class="alert alert-success">🎉 게시글이 성공적으로 등록되었습니다.</div>`;
+                `<div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-green-800 font-medium">게시글이 성공적으로 등록되었습니다.</p>
+                            </div>
+                        </div>
+                    </div>`;
             document.getElementById('board-form').reset();
+
+            setTimeout(() => {
+                window.location.href = '/boardpage';
+            }, 2000);
         } catch (err) {
             document.getElementById('message').innerHTML =
-                `<div class="alert alert-danger">⚠️ 게시글 등록에 실패했습니다. 다시 시도해주세요.</div>`;
+                `<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-red-800 font-medium">게시글 등록에 실패했습니다. 다시 시도해주세요.</p>
+                                <p class="text-red-700 text-sm">${err.response?.data?.message || err.message}</p>
+                            </div>
+                        </div>
+                    </div>`;
+        } finally {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
         }
     });
 
@@ -165,6 +242,5 @@
         window.location.href = '/boardpage';
     }
 </script>
-
 </body>
 </html>

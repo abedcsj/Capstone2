@@ -98,6 +98,7 @@ public class BoardParticipationService {
                 p.getId(),
                 p.getBoard().getId(),
                 p.getUser().getId(),
+                p.getUser().getUsername(),
                 p.getStatus(),
                 p.getRequestedAt(),
                 p.getApprovedAt(),

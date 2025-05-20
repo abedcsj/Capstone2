@@ -2,96 +2,145 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>TimeBank | 로그인</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeBank - 로그인</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #83C884;
+            --primary-dark: #3E7C4A;
+            --primary-light: #A7D7A3;
+            --primary-bg: #F6FFF6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #A7D7A3;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--primary-light);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
         }
+
         .login-card {
-            background: #ffffff;
+            background-color: white;
             border-radius: 20px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            box-shadow: 0 8px 20px var(--shadow-color);
         }
-        .login-card img {
-            width: 100px;
-            margin-bottom: 1.5rem;
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            transition: all 0.3s ease;
         }
-        .login-card h2 {
-            font-weight: 700;
-            color: #3E7C4A;
-            margin-bottom: 1rem;
-        }
-        .form-floating > .form-control {
-            border-radius: 15px;
-            background-color: #F6FFF6;
-            border: 1px solid #D0E8D0;
-        }
-        .btn-login {
-            background-color: #82C784;
-            border: none;
-            border-radius: 15px;
-            padding: 0.75rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        .btn-login:hover {
+
+        .btn-primary:hover {
             background-color: #6DB96E;
+            transform: translateY(-2px);
         }
-        .link-small {
-            font-size: 0.9rem;
-            color: #3E7C4A;
-            text-decoration: none;
+
+        .form-input {
+            border-radius: 15px;
+            background-color: var(--primary-bg);
+            border: 1px solid #D0E8D0;
+            transition: all 0.3s ease;
         }
-        .link-small:hover {
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(131, 200, 132, 0.25);
+            outline: none;
+        }
+
+        .link-primary {
+            color: var(--primary-dark);
+            transition: all 0.3s ease;
+        }
+
+        .link-primary:hover {
+            color: var(--primary-color);
             text-decoration: underline;
         }
-        .alert {
-            border-radius: 10px;
-            font-size: 0.9rem;
+
+        .logo-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
-
-<body>
-
-<div class="login-card">
-    <img src="/image/timebank-logo.png" alt="TimeBank Logo">
-
-    <h2>TimeBank 로그인</h2>
-
-    <form id="login-form">
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="username" placeholder="아이디" required>
-            <label for="username">아이디</label>
+<body class="flex items-center justify-center p-4">
+<div class="login-card w-full max-w-md p-8">
+    <div class="text-center mb-8">
+        <div class="mb-4 flex justify-center">
+            <div class="logo-pulse w-24 h-24 rounded-full bg-primary-light flex items-center justify-center">
+                <i class="bi bi-clock-history text-4xl text-primary-dark"></i>
+            </div>
         </div>
-        <div class="form-floating mb-4">
-            <input type="password" class="form-control" id="password" placeholder="비밀번호" required>
-            <label for="password">비밀번호</label>
+        <h1 class="text-3xl font-bold text-primary-dark">TimeBank</h1>
+        <p class="text-gray-600 mt-2">시간을 나누고, 가치를 더하다</p>
+    </div>
+
+    <form id="login-form" class="space-y-6">
+        <div class="space-y-2">
+            <label for="username" class="block text-sm font-medium text-gray-700">아이디</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="bi bi-person text-gray-400"></i>
+                </div>
+                <input id="username" name="username" type="text" required
+                       class="form-input block w-full pl-10 py-3 text-gray-700"
+                       placeholder="아이디를 입력하세요">
+            </div>
         </div>
-        <button type="submit" class="btn btn-login w-100 mb-3">로그인</button>
-        <div class="d-flex justify-content-between">
-            <a href="/register" class="link-small">회원가입</a>
-            <a href="#" class="link-small">비밀번호 찾기</a>
+
+        <div class="space-y-2">
+            <label for="password" class="block text-sm font-medium text-gray-700">비밀번호</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="bi bi-lock text-gray-400"></i>
+                </div>
+                <input id="password" name="password" type="password" required
+                       class="form-input block w-full pl-10 py-3 text-gray-700"
+                       placeholder="비밀번호를 입력하세요">
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <input id="remember-me" name="remember-me" type="checkbox"
+                       class="h-4 w-4 text-primary border-gray-300 rounded">
+                <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                    자동 로그인
+                </label>
+            </div>
+            <a href="#" class="text-sm link-primary">
+                비밀번호를 잊으셨나요?
+            </a>
+        </div>
+
+        <div>
+            <button type="submit" class="btn-primary w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white font-medium">
+                로그인
+            </button>
         </div>
     </form>
 
-    <div id="message" class="mt-3"></div>
+    <div class="mt-6 text-center">
+        <p>계정이 없으신가요? <a href="/register" class="link-primary font-medium">가입하기</a></p>
+    </div>
+
+    <div id="message" class="mt-4 text-center text-sm"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.getElementById('login-form').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -102,33 +151,36 @@
         };
 
         try {
-            const res = await axios.post('/api/auth/login', loginData, {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(loginData)
             });
 
-            const accessToken = res.headers['authorization'];
-            const refreshToken = res.headers['authorization-refresh'];
+            if (!res.ok) {
+                throw new Error('로그인에 실패했습니다');
+            }
+
+            const accessToken = res.headers.get('authorization');
+            const refreshToken = res.headers.get('authorization-refresh');
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
-            // document.getElementById('message').innerHTML =
-            //     `<div class="alert alert-success">🎉 로그인 성공! 환영합니다.</div>`;
+            // 성공 메시지와 리다이렉트
+            document.getElementById('message').innerHTML =
+                `<div class="p-2 bg-green-100 text-green-700 rounded-md">로그인 성공! 환영합니다.</div>`;
+
             setTimeout(() => {
                 window.location.href = '/mypage';
-            }, 500);
+            }, 1000);
 
-        } catch (err) {
-            let msg = '로그인 실패';
-            if (err.response?.status === 401) {
-                msg = '아이디 또는 비밀번호가 틀립니다.';
-            }
+        } catch (error) {
             document.getElementById('message').innerHTML =
-                `<div class="alert alert-danger">${msg}</div>`;
+                `<div class="p-2 bg-red-100 text-red-700 rounded-md">${error.message}</div>`;
         }
     });
 </script>
-
 </body>
 </html>

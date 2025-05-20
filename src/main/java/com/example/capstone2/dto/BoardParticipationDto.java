@@ -14,6 +14,7 @@ public class BoardParticipationDto {
     private Long id;
     private Long boardId;
     private Long userId;
+    private String username; // 추가!
     private ParticipationStatus status;
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;

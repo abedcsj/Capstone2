@@ -2,102 +2,209 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 수정 | Time Bank</title>
+    <title>TimeBank - 게시글 수정</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-light: #A7D7A3;
+            --primary-dark: #3E7C4A;
+            --secondary: #82C784;
+            --accent: #388E3C;
+            --background: #F6FFF6;
+            --text: #333333;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #A7D7A3;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background-color: var(--primary-light);
+            color: var(--text);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', sans-serif;
         }
-        .modify-container {
-            background: #fff;
-            border-radius: 20px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 800px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
+
         .btn-primary {
-            background-color: #82C784;
-            border: none;
-            border-radius: 15px;
-            font-weight: 600;
+            background-color: var(--secondary);
+            transition: all 0.3s ease;
         }
+
         .btn-primary:hover {
-            background-color: #6DB96E;
+            background-color: var(--accent);
         }
+
         .btn-secondary {
-            background-color: #ccc;
-            border: none;
-            border-radius: 15px;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(130, 199, 132, 0.2);
+        }
+
+        .button-group button {
+            transition: all 0.2s ease;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .participant-card {
+            border: 1px solid #E5F3E5;
+            border-radius: 0.5rem;
+            background-color: #FBFEFB;
+            transition: all 0.2s ease;
+        }
+
+        .participant-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: var(--primary-dark);
             font-weight: 600;
         }
-        .btn-secondary:hover {
-            background-color: #bbb;
-        }
-        .participant-box {
-            border: 1px solid #D0E8D0;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: #F6FFF6;
+
+        .form-control {
+            border-radius: 0.5rem;
+            border: 1px solid #E5F3E5;
+            padding: 0.75rem 1rem;
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-kr@4.5.0/index.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="modify-container">
-    <h2 class="mb-4 text-center" style="color:#3E7C4A;">게시글 수정</h2>
-    <form id="modify-form">
-        <div class="mb-3">
-            <label for="title" class="form-label">제목</label>
-            <input type="text" id="title" class="form-control" required>
+<!-- 네비게이션 바 -->
+<nav class="navbar py-4 px-6 flex items-center justify-between">
+    <div class="flex items-center">
+        <a href="/" class="flex items-center">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="TimeBank Logo" class="h-8 w-auto mr-3">
+            <span class="font-bold text-2xl text-green-600">TimeBank</span>
+        </a>
+    </div>
+    <div class="flex items-center space-x-4">
+        <a href="/boardpage" class="text-gray-700 hover:text-green-600">
+            <i class="bi bi-list-ul mr-1"></i> 게시판
+        </a>
+        <a href="/mypage" class="text-gray-700 hover:text-green-600">
+            <i class="bi bi-person mr-1"></i> 마이페이지
+        </a>
+        <button id="logoutBtn" class="text-gray-700 hover:text-green-600">
+            <i class="bi bi-box-arrow-right mr-1"></i> 로그아웃
+        </button>
+    </div>
+</nav>
+
+<!-- 메인 컨테이너 -->
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- 게시글 수정 카드 -->
+        <div class="card p-8 mb-6">
+            <h1 class="text-2xl font-bold text-center text-green-700 mb-6">게시글 수정</h1>
+
+            <form id="modify-form">
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">제목</label>
+                    <input type="text" id="title" class="w-full form-control" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">내용</label>
+                    <textarea id="description" class="w-full form-control" rows="5" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
+                    <select id="category" class="w-full form-control" required>
+                        <option value="EDUCATION">교육 & 학습</option>
+                        <option value="IT">IT & 개발</option>
+                        <option value="DESIGN">디자인 & 예술</option>
+                        <option value="TRANSLATION">번역 & 작문</option>
+                        <option value="LIFESTYLE">생활 & 취미</option>
+                        <option value="ENGINEERING">공학 & 과학</option>
+                        <option value="BUSINESS">비즈니스 & 금융</option>
+                        <option value="VOLUNTEERING">사회봉사 & 공익</option>
+                        <option value="HEALTHCARE">건강 & 의료</option>
+                        <option value="SPORTS">스포츠 & 트레이닝</option>
+                        <option value="COOKING">요리 & 베이킹</option>
+                        <option value="ETC">기타 맞춤형 재능</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label for="creditPrice" class="block text-sm font-medium text-gray-700 mb-1">크레딧 가격</label>
+                    <input type="number" id="creditPrice" class="w-full form-control" required min="0">
+                </div>
+
+                <div class="flex items-center justify-between mt-8">
+                    <button type="button" class="px-6 py-2.5 rounded-lg btn-secondary" onclick="goBack()">
+                        <i class="bi bi-arrow-left mr-1"></i> 뒤로 가기
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-lg bg-green-500 text-white font-medium btn-primary">
+                        <i class="bi bi-check-lg mr-1"></i> 수정 완료
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">내용</label>
-            <textarea id="description" class="form-control" rows="5" required></textarea>
+
+        <!-- 참여 요청자 목록 -->
+        <div class="card p-8 mb-6">
+            <h2 class="text-xl font-bold text-green-700 mb-4 section-title">
+                <i class="bi bi-people mr-2"></i> 참여 요청자 목록
+            </h2>
+            <div id="participants-list" class="space-y-4">
+                <!-- 참여 요청자가 여기에 동적으로 추가됩니다 -->
+                <div class="text-gray-500 text-center py-4">로딩 중...</div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="category" class="form-label">카테고리</label>
-            <select id="category" class="form-select" required>
-                <option value="EDUCATION">교육 & 학습</option>
-                <option value="IT">IT & 개발</option>
-                <option value="DESIGN">디자인 & 예술</option>
-                <option value="TRANSLATION">번역 & 작문</option>
-                <option value="LIFESTYLE">생활 & 취미</option>
-                <option value="ENGINEERING">공학 & 과학</option>
-                <option value="BUSINESS">비즈니스 & 금융</option>
-                <option value="VOLUNTEERING">사회봉사 & 공익</option>
-                <option value="HEALTHCARE">건강 & 의료</option>
-                <option value="SPORTS">스포츠 & 트레이닝</option>
-                <option value="COOKING">요리 & 베이킹</option>
-                <option value="ETC">기타 맞춤형 재능</option>
-            </select>
+
+        <!-- 승인된 참여자 목록 -->
+        <div class="card p-8">
+            <h2 class="text-xl font-bold text-green-700 mb-4 section-title">
+                <i class="bi bi-check-circle mr-2"></i> 승인된 참여자 목록
+            </h2>
+            <div id="approved-participants-list" class="space-y-4">
+                <!-- 승인된 참여자가 여기에 동적으로 추가됩니다 -->
+                <div class="text-gray-500 text-center py-4">로딩 중...</div>
+            </div>
         </div>
-        <div class="mb-4">
-            <label for="creditPrice" class="form-label">크레딧 가격</label>
-            <input type="number" id="creditPrice" class="form-control" required min="0">
-        </div>
-        <div class="d-grid gap-2 mb-4">
-            <button type="submit" class="btn btn-primary">수정 완료</button>
-            <button type="button" class="btn btn-secondary" onclick="goBack()">뒤로 가기</button>
-        </div>
-    </form>
-    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">참여 요청자 목록</h4>
-    <div id="participants-list"></div>
-    <h4 class="mt-4 mb-3" style="color:#3E7C4A;">승인된 참여자 목록</h4>
-    <div id="approved-participants-list"></div>
+    </div>
 </div>
+
+<!-- 푸터 -->
+<footer class="bg-white py-6 mt-12">
+    <div class="container mx-auto px-6">
+        <div class="text-center text-sm text-gray-500">
+            <p>&copy; 2025 TimeBank. 모든 권리 보유.</p>
+            <p class="mt-2">시간을 나누고, 함께 성장하세요.</p>
+        </div>
+    </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     const token = localStorage.getItem('accessToken');
     const boardId = location.pathname.split('/').pop();
+
+    // 로그인 여부 확인
+    if (!token) {
+        alert('로그인이 필요한 서비스입니다.');
+        window.location.href = '/login';
+    }
 
     async function loadBoard() {
         try {
@@ -109,7 +216,7 @@
             document.getElementById('creditPrice').value = board.creditPrice;
         } catch (err) {
             console.error(err);
-            alert('게시글 정보를 불러오지 못했습니다.');
+            showNotification('게시글 정보를 불러오지 못했습니다.', 'error');
         }
     }
 
@@ -118,23 +225,42 @@
             const res = await axios.get(`/api/boards/${boardId}/allregister`, { headers: { Authorization: token } });
             const container = document.getElementById('participants-list');
             container.innerHTML = '';
-            res.data.forEach(p => {
-                if (p.status === 'PENDING') {
-                    const div = document.createElement('div');
-                    div.className = 'participant-box';
-                    div.innerHTML = `
-                        <p><strong>유저 ID:</strong> ${p.userId}</p>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-success" onclick="approve(${p.id})">참여 승인</button>
-                            <button class="btn btn-danger" onclick="reject(${p.id})">참여 거절</button>
+
+            const pendingParticipants = res.data.filter(p => p.status === 'PENDING');
+
+            if (pendingParticipants.length === 0) {
+                container.innerHTML = '<p class="text-center py-4 text-gray-500">신청 대기 중인 참여자가 없습니다.</p>';
+                return;
+            }
+
+            pendingParticipants.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'participant-card p-4';
+                div.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-800">
+                                    <i class="bi bi-person-circle mr-2"></i>${p.userId}
+                                </p>
+                                <p class="text-sm text-gray-500 mt-1">신청일: ${formatDate(p.createdDate || '정보 없음')}</p>
+                            </div>
+                            <div class="space-x-2">
+                                <button class="px-4 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                                        onclick="approve(${p.id})">
+                                    <i class="bi bi-check-lg mr-1"></i> 승인
+                                </button>
+                                <button class="px-4 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                                        onclick="reject(${p.id})">
+                                    <i class="bi bi-x-lg mr-1"></i> 거절
+                                </button>
+                            </div>
                         </div>
                     `;
-                    container.appendChild(div);
-                }
+                container.appendChild(div);
             });
         } catch (err) {
             console.error(err);
-            alert('참여자 목록을 불러오지 못했습니다.');
+            showNotification('참여자 목록을 불러오지 못했습니다.', 'error');
         }
     }
 
@@ -145,60 +271,80 @@
             });
             const container = document.getElementById('approved-participants-list');
             container.innerHTML = '';
+
+            if (res.data.length === 0) {
+                container.innerHTML = '<p class="text-center py-4 text-gray-500">승인된 참여자가 없습니다.</p>';
+                return;
+            }
+
             res.data.forEach(p => {
                 const div = document.createElement('div');
-                div.className = 'participant-box';
+                div.className = 'participant-card p-4';
                 div.innerHTML = `
-                    <p><strong>유저 ID:</strong> ${p.userId}</p>
-                    <div class="d-grid">
-                        <button class="btn btn-warning" onclick="refund(${p.id})">환불 요청</button>
-                    </div>
-                `;
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-800">
+                                    <i class="bi bi-person-circle mr-2"></i>${p.userId}
+                                </p>
+                                <p class="text-sm text-gray-500 mt-1">승인일: ${formatDate(p.approvedDate || '정보 없음')}</p>
+                            </div>
+                            <button class="px-4 py-1.5 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+                                    onclick="refund(${p.id})">
+                                <i class="bi bi-arrow-counterclockwise mr-1"></i> 환불 요청
+                            </button>
+                        </div>
+                    `;
                 container.appendChild(div);
             });
         } catch (err) {
             console.error(err);
-            alert('승인된 참여자 목록을 불러오지 못했습니다.');
+            showNotification('승인된 참여자 목록을 불러오지 못했습니다.', 'error');
         }
     }
 
     async function approve(participationId) {
+        if (!confirm('이 참여 요청을 승인하시겠습니까?')) return;
+
         try {
             await axios.put(`/api/boards/${participationId}/approve`, null, {
                 headers: { Authorization: token }
             });
-            alert('✅ 참여가 승인되었습니다!');
+            showNotification('참여가 승인되었습니다!');
             loadParticipants();
             loadApprovedParticipants();
         } catch (err) {
             console.error(err);
-            alert('⚠️ 참여 승인 실패');
+            showNotification('참여 승인 실패', 'error');
         }
     }
 
     async function reject(participationId) {
+        if (!confirm('이 참여 요청을 거절하시겠습니까?')) return;
+
         try {
             await axios.put(`/api/boards/${participationId}/reject`, null, {
                 headers: { Authorization: token }
             });
-            alert('🚫 참여가 거절되었습니다.');
+            showNotification('참여가 거절되었습니다.');
             loadParticipants();
         } catch (err) {
             console.error(err);
-            alert('⚠️ 참여 거절 실패');
+            showNotification('참여 거절 실패', 'error');
         }
     }
 
     async function refund(participationId) {
+        if (!confirm('이 참여자에게 환불을 진행하시겠습니까?')) return;
+
         try {
             await axios.put(`/api/board-participation/${participationId}/refund`, null, {
                 headers: { Authorization: token }
             });
-            alert('💰 환불 요청 완료!');
+            showNotification('환불 요청이 완료되었습니다!');
             loadApprovedParticipants();
         } catch (err) {
             console.error(err);
-            alert('⚠️ 환불 요청 실패');
+            showNotification('환불 요청 실패', 'error');
         }
     }
 
@@ -219,11 +365,64 @@
             await axios.patch(`/api/boards/${boardId}`, body, {
                 headers: { Authorization: token }
             });
-            alert('✅ 게시글이 수정되었습니다.');
-            goBack();
+            showNotification('게시글이 수정되었습니다!');
+            setTimeout(() => goBack(), 1500);
         } catch (err) {
             console.error(err);
-            alert('⚠️ 게시글 수정 실패');
+            showNotification('게시글 수정에 실패했습니다.', 'error');
+        }
+    });
+
+    function showNotification(message, type = 'success') {
+        // 기존 알림이 있으면 제거
+        const existingAlert = document.querySelector('.notification-alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        // 새 알림 생성
+        const alert = document.createElement('div');
+        alert.className = `notification-alert fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
+            type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'
+        } border z-50`;
+        alert.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi ${
+            type === 'success' ? 'bi-check-circle-fill text-green-500' : 'bi-exclamation-circle-fill text-red-500'
+        } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+        document.body.appendChild(alert);
+
+        // 3초 후 알림 제거
+        setTimeout(() => {
+            alert.classList.add('opacity-0');
+            alert.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => alert.remove(), 500);
+        }, 3000);
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '알 수 없음';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
         }
     });
 

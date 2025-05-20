@@ -173,11 +173,37 @@ public class BoardService {
                 participation.getId(),
                 participation.getBoard().getId(),
                 participation.getUser().getId(),
+                participation.getUser().getUsername(),
                 participation.getStatus(),
                 participation.getRequestedAt(),
                 participation.getApprovedAt(),
                 participation.getCreditAmount()
         );
 
+    }
+
+    public List<BoardDto> getAllBoards() {
+        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return boards.stream()
+                .map(board -> new BoardDto(
+                        board.getId(),
+                        board.getOwner().getId(),      // ✅ userId
+                        board.getTitle(),
+                        board.getDescription(),
+                        board.getLikeCount(),
+                        board.getCategory(),           // ✅ Category (enum 그대로)
+                        board.getCreditPrice(),
+                        board.isClosed(),              // ✅ boolean
+                        board.getCreatedAt(),          // ✅ LocalDateTime
+                        board.getUpdatedAt()           // ✅ LocalDateTime
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public BoardDto getBoardById(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        return toDto(board);
     }
 }
