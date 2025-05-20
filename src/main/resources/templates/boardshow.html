@@ -293,10 +293,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <span class="badge" id="category-badge"></span>
-                        <div class="mt-2">
-                            <span class="label">작성자:</span>
-                            <span id="author" class="ml-2"></span>
-                        </div>
+<!--                        <div class="mt-2">-->
+<!--                            <span class="label">작성자:</span>-->
+<!--                            <span id="author" class="ml-2"></span>-->
+<!--                        </div>-->
                         <div class="mt-2">
                             <span class="label">작성일:</span>
                             <span id="created-date" class="ml-2"></span>
@@ -421,7 +421,7 @@
             document.getElementById('description').textContent = boardData.description;
             document.getElementById('category-badge').textContent = convertCategory(boardData.category);
             document.getElementById('credit-price').textContent = boardData.creditPrice;
-            document.getElementById('author').textContent = boardData.authorName || '알 수 없음';
+            // document.getElementById('author').textContent = boardData.authorName || '알 수 없음';
             document.getElementById('created-date').textContent = formatDate(boardData.createdAt);
             document.getElementById('like-count').textContent = boardData.likeCount;
 
@@ -488,10 +488,12 @@
                 avatar.className = 'avatar';
 
                 // userId가 숫자라도 문자열로 변환해서 사용
-                avatar.textContent = String(p.userId).substring(0, 1).toUpperCase();
+                // avatar.textContent = String(p.userId).substring(0, 1).toUpperCase();
+                avatar.textContent = String(p.username);
+
 
                 userInfo.appendChild(avatar);
-                userInfo.innerHTML += `<p class="font-medium">${p.userId}</p>`;
+                userInfo.innerHTML += `<p class="font-medium">${p.username}</p>`;
 
                 div.appendChild(userInfo);
 
@@ -500,10 +502,10 @@
                     const actions = document.createElement('div');
                     actions.className = 'card-actions';
                     actions.innerHTML = `
-                  <button class="btn-success px-3 py-1 rounded-lg text-sm" onclick="approve(${p.id})">
+                  <button class="btn-success px-3 py-1 rounded-lg text-sm" onclick="approve(${p.username})">
                     <i class="fas fa-check mr-1"></i> 승인
                   </button>
-                  <button class="btn-danger px-3 py-1 rounded-lg text-sm" onclick="reject(${p.id})">
+                  <button class="btn-danger px-3 py-1 rounded-lg text-sm" onclick="reject(${p.username})">
                     <i class="fas fa-times mr-1"></i> 거절
                   </button>
                 `;
