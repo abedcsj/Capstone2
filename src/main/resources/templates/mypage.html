@@ -254,8 +254,8 @@
 <script>
     // 토큰 체크
     const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken || accessToken === 'undefined') {
-        alert("로그인이 필요합니다.");
+    if (!accessToken || accessToken === 'undefined' || accessToken === 'null') {
+        alert("아이디 혹은 비밀번호가 올바르지 않습니다");
         localStorage.clear(); // 혹시나 잘못된 토큰이 남아있는 경우 제거
         window.location.href = "/login";
     }
