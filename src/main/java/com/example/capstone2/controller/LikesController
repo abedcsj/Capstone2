@@ -1,0 +1,21 @@
+package com.example.capstone2.controller;
+
+import com.example.capstone2.service.LikeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/likes")
+@RequiredArgsConstructor
+public class LikesController {
+    private final LikeService likeService;
+
+    @PostMapping("/user")
+    public ResponseEntity<String> toggleUserLike(
+            @RequestParam Long userId,
+            @RequestParam Long likedUserId) {
+        likeService.toggleLikeOnUser(userId, likedUserId);
+        return ResponseEntity.ok("like toggled");
+    }
+}
